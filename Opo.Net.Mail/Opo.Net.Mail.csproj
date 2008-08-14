@@ -45,9 +45,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attachment.cs" />
+    <Compile Include="Interfaces\IAttachment.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="EmailAddress.cs" />
+    <Compile Include="MailAddressCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Opo.Net.Mime\Opo.Net.Mime.csproj">
+      <Project>{013F6B4D-ED77-4A08-9EAF-5AA2517F05F4}</Project>
+      <Name>Opo.Net.Mime</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,6 @@
 ﻿namespace Opo.Net.Mail
 {
-    public interface IEmailAddress
+    public interface IMailAddress
     {
         string Address { get; set; }
         string DisplayName { get; set; }

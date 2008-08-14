@@ -3,25 +3,25 @@ using System.Text.RegularExpressions;
 
 namespace Opo.Net.Mail
 {
-    public class EmailAddress : IEmailAddress
+    public class MailAddress : IMailAddress
     {
         /// <summary>
         /// Address part of the mail address, e.g. "email@sample.org"
         /// </summary>
-        private string address;
+        private string _address;
         
         /// <summary>
         /// Gets or sets the address part of the mail address, e.g. "email.sample.org"
         /// </summary>
         public string Address
         {
-            get { return address; }
+            get { return _address; }
             set
             {
                 string tempValue = value.Trim();
                 Regex r = new Regex(@"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
                 if (r.IsMatch(tempValue))
-                    this.address = tempValue;
+                    this._address = tempValue;
                 else
                     throw new ArgumentException("\"" + value + "\" is not a valid email address.");
             }
@@ -43,7 +43,7 @@ namespace Opo.Net.Mail
             }
             set
             {
-                this.address = String.Format("{0}@{1}", GetAccountName(this), value);
+                this._address = String.Format("{0}@{1}", GetAccountName(this), value);
             }
         }
 
@@ -58,23 +58,23 @@ namespace Opo.Net.Mail
             }
             set
             {
-                this.address = String.Format("{0}@{1}", value, GetDomain(this));
+                this._address = String.Format("{0}@{1}", value, GetDomain(this));
             }
         }
 
-        public EmailAddress(string address)
+        public MailAddress(string address)
         {
             this.Address = address;
             this.DisplayName = "";
         }
-        public EmailAddress(string address, string displayName)
+        public MailAddress(string address, string displayName)
         {
             this.Address = address;
             this.DisplayName = displayName;
         }
         public override string ToString()
         {
-            return (!String.IsNullOrEmpty(DisplayName)) ? String.Concat("\"", DisplayName, "\" <", address, ">") : address;
+            return (!String.IsNullOrEmpty(DisplayName)) ? String.Concat("\"", DisplayName, "\" <", _address, ">") : _address;
         }
         /// <summary>
         /// Returns a formatted mail address. Use {0} or {address} for the Address part and {1} or {displayname} for the DisplayName part.
@@ -88,22 +88,22 @@ namespace Opo.Net.Mail
         }
 
         #region Static methods
-        public static EmailAddress Parse(string EmailAddress)
+        public static MailAddress Parse(string MailAddress)
         {
             Regex r = new Regex(@"(?<Address>([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?))");
-            Match m = r.Match(EmailAddress);
+            Match m = r.Match(MailAddress);
             if (m.Groups["Address"].Length <= 0)
                 throw new ArgumentException("mailAddres contains no valid email address.");
-            EmailAddress address = new EmailAddress(m.Groups["Address"].Value);
-            address.DisplayName = r.Replace(EmailAddress, "").Replace("\"", "").Replace("<", "").Replace(">", "").Trim();
+            MailAddress address = new MailAddress(m.Groups["Address"].Value);
+            address.DisplayName = r.Replace(MailAddress, "").Replace("\"", "").Replace("<", "").Replace(">", "").Trim();
             return address;
         }
-        public static string GetDomain(EmailAddress address)
+        public static string GetDomain(MailAddress address)
         {
             string a = address.Address;
             return a.Substring(a.IndexOf('@') + 1);
         }
-        public static string GetAccountName(EmailAddress address)
+        public static string GetAccountName(MailAddress address)
         {
             string a = address.Address;
             return a.Substring(0, a.IndexOf('@'));
