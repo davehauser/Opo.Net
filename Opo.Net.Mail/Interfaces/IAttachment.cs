@@ -12,5 +12,6 @@ namespace Opo.Net.Mail
         ContentDisposition ContentDisposition { get; set; }
 
         Stream GetContentStream();
+        string SaveToFile(string path, string filename);
     }
 }
