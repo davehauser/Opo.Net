@@ -35,6 +35,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -45,12 +46,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlternativeView.cs" />
     <Compile Include="Attachment.cs" />
+    <Compile Include="AttachmentCollection.cs" />
+    <Compile Include="Enums\AttachmentType.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Interfaces\IAlternativeView.cs" />
+    <Compile Include="Interfaces\IAlternativeViewCollection.cs" />
     <Compile Include="Interfaces\IAttachment.cs" />
-    <Compile Include="Interfaces\IEmailAddress.cs" />
-    <Compile Include="EmailAddress.cs" />
+    <Compile Include="Interfaces\IMailAddress.cs" />
+    <Compile Include="Interfaces\IMailMessage.cs" />
+    <Compile Include="Interfaces\IMailMessageConverter.cs" />
+    <Compile Include="Interfaces\IRecieveMailClient.cs" />
+    <Compile Include="Interfaces\ISendMailClient.cs" />
+    <Compile Include="MailAddress.cs" />
+    <Compile Include="Interfaces\IPop3Client.cs" />
     <Compile Include="MailAddressCollection.cs" />
+    <Compile Include="MailHeader.cs" />
+    <Compile Include="MailHeaderCollection.cs" />
+    <Compile Include="MailMessage.cs" />
+    <Compile Include="Enums\MailMessageBodyType.cs" />
+    <Compile Include="Enums\MailPriority.cs" />
+    <Compile Include="MimeMailMessageConverter.cs" />
+    <Compile Include="Pop3Client.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XmlMailMessageConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Opo.Net.Mime\Opo.Net.Mime.csproj">
