@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using Opo.Net.Mail;
 using NUnit.Framework;
 
-namespace Opo.Net.Mail.Tests
+namespace Opo.Net.Mail
 {
     /// <summary>
-    /// Tests for Opo.Net.Mail.EmailAddress
+    /// Tests for Opo.Net.Mail.MailAddress
     /// </summary>
-    [TestFixture(Description = "Tests for Opo.Net.Mail.EmailAddress")]
-    public class EmailAddressTests
+    [TestFixture(Description = "Tests for Opo.Net.Mail.MailAddress")]
+    public class MailAddressTests
     {
         /// <summary>
         /// Sample email account name
@@ -46,18 +46,18 @@ namespace Opo.Net.Mail.Tests
         /// <summary>
         /// Tests for the constructor with both possibilities:
         /// <list type="number">
-        /// <item>EmailAddress(address)</item>
-        /// <item>EmailAddress(address, displayName)</item>
+        /// <item>MailAddress(address)</item>
+        /// <item>MailAddress(address, displayName)</item>
         /// </list>
         /// </summary>
         [Test(Description = "Tests constructor with one and two arguments.")]
-        public void CanCreateEmailAddress()
+        public void CanCreatMailAddress()
         {
-            EmailAddress ma = new EmailAddress(this.address);
+            MailAddress ma = new MailAddress(this.address);
             Assert.AreEqual(this.address, ma.Address);
             Assert.AreEqual("", ma.DisplayName);
 
-            ma = new EmailAddress(this.address, this.displayName);
+            ma = new MailAddress(this.address, this.displayName);
             Assert.AreEqual(this.address, ma.Address);
             Assert.AreEqual(this.displayName, ma.DisplayName);
         }
@@ -67,9 +67,9 @@ namespace Opo.Net.Mail.Tests
         /// </summary>
         [Test(Description = "Tests the constructors with invalid arguments")]
         [ExpectedException(typeof(ArgumentException))]
-        public void CannotCreateEmailAddressWithInvalidArguments()
+        public void CannotCreatMailAddressWithInvalidArguments()
         {
-            new EmailAddress("\"Email 2\" <email2@example.org>");
+            new MailAddress("\"Email 2\" <email2@example.org>");
         }
 
         /// <summary>
@@ -83,10 +83,10 @@ namespace Opo.Net.Mail.Tests
         [Test(Description = "Tests the ToString() method.")]
         public void DisplayAddressString()
         {
-            EmailAddress ma = new EmailAddress(this.address);
+            MailAddress ma = new MailAddress(this.address);
             Assert.AreEqual(this.address, ma.ToString());
 
-            ma = new EmailAddress(this.address, this.displayName);
+            ma = new MailAddress(this.address, this.displayName);
             string expected = String.Format("\"{0}\" <{1}>", this.displayName, this.address);
             Assert.AreEqual(expected, ma.ToString());
         }
@@ -95,30 +95,30 @@ namespace Opo.Net.Mail.Tests
         /// Tests the mail address parser with different valid inputs
         /// </summary>
         [Test(Description = "Tests the mail address parser with different valid inputs")]
-        public void CanParseEmailAddress()
+        public void CanParseMailAddress()
         {
-            string testEmailAddress = "email@example.org";
-            EmailAddress ma = EmailAddress.Parse(testEmailAddress);
+            string testMailAddress = "email@example.org";
+            MailAddress ma = MailAddress.Parse(testMailAddress);
             Assert.AreEqual("email@example.org", ma.Address);
             Assert.AreEqual("", ma.DisplayName);
 
-            testEmailAddress = "my-email@blog.example.org  ";
-            ma = EmailAddress.Parse(testEmailAddress);
+            testMailAddress = "my-email@blog.example.org  ";
+            ma = MailAddress.Parse(testMailAddress);
             Assert.AreEqual("my-email@blog.example.org", ma.Address);
             Assert.AreEqual("", ma.DisplayName);
 
-            testEmailAddress = " email@example.org  ";
-            ma = EmailAddress.Parse(testEmailAddress);
+            testMailAddress = " email@example.org  ";
+            ma = MailAddress.Parse(testMailAddress);
             Assert.AreEqual("email@example.org", ma.Address);
             Assert.AreEqual("", ma.DisplayName);
 
-            testEmailAddress = "\"Sample Email Address\" <email@example.org>";
-            ma = EmailAddress.Parse(testEmailAddress);
+            testMailAddress = "\"Sample Email Address\" <email@example.org>";
+            ma = MailAddress.Parse(testMailAddress);
             Assert.AreEqual("email@example.org", ma.Address);
             Assert.AreEqual("Sample Email Address", ma.DisplayName);
 
-            testEmailAddress = "  Sample Email Address   email@example.org";
-            ma = EmailAddress.Parse(testEmailAddress);
+            testMailAddress = "  Sample Email Address   email@example.org";
+            ma = MailAddress.Parse(testMailAddress);
             Assert.AreEqual("email@example.org", ma.Address);
             Assert.AreEqual("Sample Email Address", ma.DisplayName);
         }
@@ -128,9 +128,9 @@ namespace Opo.Net.Mail.Tests
         /// </summary>
         [Test(Description = "Tests the mail address parser with different invalid inputs")]
         [ExpectedException(typeof(ArgumentException))]
-        public void CannotParseInvalidEmailAddress()
+        public void CannotParseInvalidMailAddress()
         {
-            EmailAddress.Parse("email@blog#example.org");
+            MailAddress.Parse("email@blog#example.org");
         }
 
         /// <summary>
@@ -139,17 +139,17 @@ namespace Opo.Net.Mail.Tests
         [Test(Description = "Tests the GetAccountName method")]
         public void CanGetAccountName()
         {
-            EmailAddress ma = new EmailAddress(this.address);
-            Assert.AreEqual(this.accountName, EmailAddress.GetAccountName(ma));
+            MailAddress ma = new MailAddress(this.address);
+            Assert.AreEqual(this.accountName, MailAddress.GetAccountName(ma));
         }
 
         /// <summary>
-        /// Tests the AccountName property of EmailAddress
+        /// Tests the AccountName property of MailAddress
         /// </summary>
-        [Test(Description = "Tests the AccountName property of EmailAddress")]
+        [Test(Description = "Tests the AccountName property of MailAddress")]
         public void CanGetAndSetAccountName()
         {
-            EmailAddress ma = new EmailAddress(this.address);
+            MailAddress ma = new MailAddress(this.address);
             Assert.AreEqual(this.accountName, ma.AccountName);
 
             ma.AccountName = "sample";
@@ -162,17 +162,17 @@ namespace Opo.Net.Mail.Tests
         [Test(Description = "Tests the GetDomain method")]
         public void CanGetDomain()
         {
-            EmailAddress ma = new EmailAddress(this.address);
-            Assert.AreEqual(this.domain, EmailAddress.GetDomain(ma));
+            MailAddress ma = new MailAddress(this.address);
+            Assert.AreEqual(this.domain, MailAddress.GetDomain(ma));
         }
 
         /// <summary>
-        /// Tests the Domain property of EmailAddress
+        /// Tests the Domain property of MailAddress
         /// </summary>
-        [Test(Description = "Tests the Domain property of EmailAddress")]
+        [Test(Description = "Tests the Domain property of MailAddress")]
         public void CanGetAndSetDomain()
         {
-            EmailAddress ma = new EmailAddress(this.address);
+            MailAddress ma = new MailAddress(this.address);
             Assert.AreEqual(this.domain, ma.Domain);
 
             ma.Domain = "email.org";

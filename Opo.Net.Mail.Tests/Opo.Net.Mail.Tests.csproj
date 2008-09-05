@@ -8,7 +8,7 @@
     <ProjectGuid>{E3EF6AB7-966F-4A58-A32C-10DF20D404F0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Opo.Net.Mail.Tests</RootNamespace>
+    <RootNamespace>Opo.Net.Mail</RootNamespace>
     <AssemblyName>Opo.Net.Mail.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -31,14 +31,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq, Version=2.6.3127.18174, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Solution Items\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.4.7.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Solution Items\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -49,7 +55,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EmailAddressTests.cs" />
+    <Compile Include="AlternativeViewTests.cs" />
+    <Compile Include="AttachmentTests.cs" />
+    <Compile Include="MailAddressTests.cs" />
+    <Compile Include="MailAddressCollectionTests.cs" />
+    <Compile Include="MailHeaderTests.cs" />
+    <Compile Include="MailMessageTests.cs" />
+    <Compile Include="Pop3ClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +69,13 @@
       <Project>{0DC3F586-F011-4604-9BF8-3CFCD14CE5D2}</Project>
       <Name>Opo.Net.Mail</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Opo.Net.Mime\Opo.Net.Mime.csproj">
+      <Project>{013F6B4D-ED77-4A08-9EAF-5AA2517F05F4}</Project>
+      <Name>Opo.Net.Mime</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MailMessage.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

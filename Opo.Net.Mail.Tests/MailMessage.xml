@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MailMessage>
+    <MessageID>1</MessageID>
+    <Conversation>
+        <MessageID>2</MessageID>
+        <MessageID>3</MessageID>
+    </Conversation>
+    <From>
+        <MailAddress>
+            <Address>from@example.org</Address>
+            <DisplayName>From Email</DisplayName>
+        </MailAddress>
+    </From>
+    <To>
+        <MailAddress>
+            <Address>to1@example.org</Address>
+            <DisplayName>To Email 1</DisplayName>
+        </MailAddress>
+        <MailAddress>
+            <Address>to2@example.org</Address>
+            <DisplayName>To Email 2</DisplayName>
+        </MailAddress>
+    </To>
+    <CC>
+        <MailAddress>
+            <Address>cc1@example.org</Address>
+            <DisplayName>CC Email 1</DisplayName>
+        </MailAddress>
+        <MailAddress>
+            <Address>cc2@example.org</Address>
+            <DisplayName>CC Email 2</DisplayName>
+        </MailAddress>
+    </CC>
+    <BCC>
+        <MailAddress>
+            <Address>bcc1@example.org</Address>
+            <DisplayName>BCC Email 1</DisplayName>
+        </MailAddress>
+        <MailAddress>
+            <Address>bcc2@example.org</Address>
+            <DisplayName>BCC Email 2</DisplayName>
+        </MailAddress>
+    </BCC>
+    <Subject>Subject</Subject>
+    <Date>Thu, 04 Sep 2008 20:21:22 + 0100</Date>
+    <ContentType>multipart/mixed</ContentType>
+    <Priority>Normal</Priority>
+    <Headers>
+        <Header1>Header1 Content</Header1>
+        <Header2>Header2 Content</Header2>
+        <Header3>Header3 Content</Header3>
+    </Headers>
+    <Body>
+        <View ContentType="text/html" Charset="iso-8859-1" TransferEncoding="quoted-printable">
+            <![CDATA[
+                This is the html part of the message body.
+            ]]>
+        </View>
+        <View ContentType="text/plain" Charset="iso-8859-1" TransferEncoding="quoted-printable">
+            <![CDATA[
+                This is the plain text part of the message body.
+            ]]>
+        </View>
+    </Body>
+    <Attachments>
+        <Attachment>
+            <Name>Attachment 1</Name>
+            <ContentType>image/gif</ContentType>
+            <ContentDisposition>
+                <Type>attachment</Type>
+                <FileName>attachment1.gif</FileName>
+                <CreationDate>Thu, 04 Sep 2008 20:21:22 +0100</CreationDate>
+                <ModificationDate>Thu, 04 Sep 2008 21:22:23 +0100</ModificationDate>
+                <ReadDate>Thu, 04 Sep 2008 22:23:24 +0100</ReadDate>
+                <Size>1000</Size>
+            </ContentDisposition>
+            <Size>1000</Size>
+            <TransferEncoding>base64</TransferEncoding>
+            <FileName>attachment1.gif</FileName>
+        </Attachment>
+        <Attachment>
+            <Name>Attachment 2</Name>
+            <ContentType>audio/mpeg</ContentType>
+            <ContentDisposition>
+                <Type>attachment</Type>
+                <FileName>attachment2.mp3</FileName>
+                <CreationDate>Thu, 04 Sep 2008 20:21:22 +0100</CreationDate>
+                <ModificationDate>Thu, 04 Sep 2008 21:22:23 +0100</ModificationDate>
+                <ReadDate>Thu, 04 Sep 2008 22:23:24 +0100</ReadDate>
+                <Size>3000</Size>
+            </ContentDisposition>
+            <Size>3000</Size>
+            <TransferEncoding>base64</TransferEncoding>
+            <FileName>attachment2.mp3</FileName>
+        </Attachment>
+    </Attachments>
+</MailMessage>
