@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opo.Net.Mail", "Opo.Net.Mail\Opo.Net.Mail.csproj", "{0DC3F586-F011-4604-9BF8-3CFCD14CE5D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opo.Net.Mail.Tests", "Opo.Net.Mail.Tests\Opo.Net.Mail.Tests.csproj", "{E3EF6AB7-966F-4A58-A32C-10DF20D404F0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opo.Net.Mime", "Opo.Net.Mime\Opo.Net.Mime.csproj", "{013F6B4D-ED77-4A08-9EAF-5AA2517F05F4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opo.Net.Mime.Tests", "Opo.Net.Mime.Tests\Opo.Net.Mime.Tests.csproj", "{45164E41-F06A-4F92-A185-95704FAC95CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opo.Net.Mail.Tests", "Opo.Net.Mail.Tests\Opo.Net.Mail.Tests.csproj", "{E3EF6AB7-966F-4A58-A32C-10DF20D404F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +19,6 @@ Global
 		{0DC3F586-F011-4604-9BF8-3CFCD14CE5D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DC3F586-F011-4604-9BF8-3CFCD14CE5D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DC3F586-F011-4604-9BF8-3CFCD14CE5D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E3EF6AB7-966F-4A58-A32C-10DF20D404F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E3EF6AB7-966F-4A58-A32C-10DF20D404F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E3EF6AB7-966F-4A58-A32C-10DF20D404F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E3EF6AB7-966F-4A58-A32C-10DF20D404F0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{013F6B4D-ED77-4A08-9EAF-5AA2517F05F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{013F6B4D-ED77-4A08-9EAF-5AA2517F05F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{013F6B4D-ED77-4A08-9EAF-5AA2517F05F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -31,6 +27,10 @@ Global
 		{45164E41-F06A-4F92-A185-95704FAC95CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45164E41-F06A-4F92-A185-95704FAC95CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45164E41-F06A-4F92-A185-95704FAC95CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3EF6AB7-966F-4A58-A32C-10DF20D404F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3EF6AB7-966F-4A58-A32C-10DF20D404F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3EF6AB7-966F-4A58-A32C-10DF20D404F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3EF6AB7-966F-4A58-A32C-10DF20D404F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
