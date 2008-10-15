@@ -91,6 +91,16 @@ namespace Opo.Net.Mail
             Assert.AreEqual(expected, ma.ToString());
         }
 
+        [Test(Description = "Tests the ToString(string format) method.")]
+        public void DisplayAddressStringWithFormat()
+        {
+            MailAddress mailAddress = new MailAddress(this.address, this.displayName);
+            string expexted = String.Format("Address: {0}, DisplayName: {1}, AccountName: {2}, Domain: {3}", this.address, this.displayName, this.accountName, this.domain);
+            Assert.AreEqual(expexted, mailAddress.ToString("Address: {0}, DisplayName: {1}, AccountName: {2}, Domain: {3}"));
+            Assert.AreEqual(expexted, mailAddress.ToString("Address: {address}, DisplayName: {displayname}, AccountName: {accountname}, Domain: {domain}"));
+            Assert.AreEqual(this.domain, mailAddress.ToString("{domain}"));
+        }
+
         /// <summary>
         /// Tests the mail address parser with different valid inputs
         /// </summary>
