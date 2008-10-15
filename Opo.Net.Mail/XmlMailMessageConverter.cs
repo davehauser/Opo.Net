@@ -5,18 +5,20 @@ using System.Text;
 using System.Xml.Linq;
 using System.IO;
 using Opo.Net.Mime;
+using System.Xml;
 
 namespace Opo.Net.Mail
 {
     public class XmlMailMessageConverter : IMailMessageConverter
     {
-        public IMailMessage LoadFromFile(string filePath)
+        public IMailMessage ConvertFrom(object data)
         {
-            MailMessage message = new MailMessage();
-            string mailPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException(String.Concat("[", filePath, "] not found."));
-            XElement xmlMessage = XDocument.Load(filePath).Element("MailMessage");
+            XElement xmlMessage = data as XElement;
+            if (xmlMessage == null)
+                return null;
+
+            IMailMessage message = new MailMessage();
+
             if (xmlMessage == null)
                 return new MailMessage();
             message.MessageID = xmlMessage.Element("MessageID").Value;
@@ -64,6 +66,64 @@ namespace Opo.Net.Mail
                     message.AlternateViews.Add(AlternativeView.LoadXmlAlternativeView(v));
                 }
             }
+            return message;
+        }
+
+        public object ConvertTo(IMailMessage mailMessage)
+        {
+            // conversation ids
+            XElement xmlConversation = new XElement("Conversation");
+            foreach (string referenceID in mailMessage.ReferenceIDs)
+            {
+                xmlConversation.Add(new XElement("MessageID", referenceID));
+            }
+            // headers
+            XElement xmlHeaders = new XElement("Headers");
+            foreach (MailHeader header in mailMessage.Headers)
+            {
+                xmlHeaders.Add(new XElement(header.Name, header.Value));
+            }
+            // alternative views
+            XElement xmlAlternativeViews = new XElement("Body");
+            foreach (AlternativeView view in mailMessage.AlternateViews)
+            {
+                xmlAlternativeViews.Add(new XElement("View",
+                    new XAttribute("ContentType", view.ContentType ?? ""),
+                    new XAttribute("TransferEncoding", view.TransferEncoding ?? ""),
+                    new XAttribute("Charset", (view.Charset ?? "utf8")),
+                    "<![CDATA[" + view.Content.HtmlEncode() + "]]>")
+                    );
+            }
+
+            // build xml file
+            XDocument xmlMailMessage = new XDocument(
+                new XDeclaration("1.0", "utf-8", "yes"),
+                new XElement("MailMessage",
+                    new XElement("MessageID", mailMessage.MessageID),
+                    xmlConversation,
+                    new XElement("From", MailAddressToXml(mailMessage.From)),
+                    new XElement("To", MailAddressListToXml(mailMessage.To)),
+                    new XElement("CC", MailAddressListToXml(mailMessage.CC)),
+                    new XElement("Bcc", MailAddressListToXml(mailMessage.Bcc)),
+                    new XElement("Subject", mailMessage.Subject),
+                    new XElement("Date", mailMessage.Date.ToString("r")),
+                    new XElement("Priority", mailMessage.Priority.ToString()),
+                    xmlHeaders,
+                    xmlAlternativeViews
+                    )
+                );
+            return xmlMailMessage;
+        }
+
+        public IMailMessage LoadFromFile(string filePath)
+        {
+            string mailPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException(String.Concat("[", filePath, "] not found."));
+            XElement xmlMessage = XDocument.Load(filePath).Element("MailMessage");
+
+            IMailMessage message = ConvertFrom(xmlMessage);
+
             // attachments
             var attachments = from v in xmlMessage.Descendants("Attachments").Descendants("Attachment")
                               select v;
@@ -88,81 +148,49 @@ namespace Opo.Net.Mail
             return message;
         }
 
-        public string SaveToFile(IMailMessage message, string path)
+        public string SaveToFile(IMailMessage mailMessage, string path)
         {
-            string fileName = String.Concat(message.MessageID, ".xml");
-            return SaveToFile(message, path, fileName);
+            string fileName = String.Concat(mailMessage.MessageID, ".xml");
+            return SaveToFile(mailMessage, path, fileName);
         }
 
-        public string SaveToFile(IMailMessage message, string path, string fileName)
+        public string SaveToFile(IMailMessage mailMessage, string path, string fileName)
         {
-            // conversation ids
-            XElement xmlConversation = new XElement("Conversation");
-            foreach (string referenceID in message.ReferenceIDs)
+            XDocument xmlMailMessage = ConvertTo(mailMessage) as XDocument;
+
+            if (xmlMailMessage != null)
             {
-                xmlConversation.Add(new XElement("MessageID", referenceID));
-            }
-            // headers
-            XElement xmlHeaders = new XElement("Headers");
-            foreach (MailHeader header in message.Headers)
-            {
-                xmlHeaders.Add(new XElement(header.Name, header.Value));
-            }
-            // alternative views
-            XElement xmlAlternativeViews = new XElement("Body");
-            foreach (AlternativeView view in message.AlternateViews)
-            {
-                xmlAlternativeViews.Add(new XElement("View",
-                    new XAttribute("ContentType", view.ContentType ?? ""),
-                    new XAttribute("TransferEncoding", view.TransferEncoding ?? ""),
-                    new XAttribute("Charset", (view.Charset ?? "utf8")),
-                    "<![CDATA[" + view.Content.HtmlEncode() + "]]>")
+                // attachments
+                XElement xmlAttachments = new XElement("Attachments");
+                foreach (Attachment attachment in mailMessage.Attachments)
+                {
+
+                    xmlAttachments.Add(new XElement("Attachment",
+                        new XElement("Name", attachment.Name),
+                        new XElement("ContentType", attachment.ContentType ?? ""),
+                        new XElement("ContentDisposition",
+                            new XElement("Type", attachment.ContentDisposition.DispositionType ?? ""),
+                            new XElement("FileName", attachment.ContentDisposition.FileName ?? ""),
+                            new XElement("CreationDate", attachment.ContentDisposition.CreationDate),
+                            new XElement("ModificationDate", attachment.ContentDisposition.ModificationDate),
+                            new XElement("ReadDate", attachment.ContentDisposition.ReadDate),
+                            new XElement("Size", attachment.Size)
+                            ),
+                        new XElement("Size", attachment.Size),
+                        new XElement("TransferEncoding", attachment.TransferEncoding),
+                        new XElement("FileName", Path.GetFileName(attachment.SaveToFile(path, String.Concat(Path.GetFileNameWithoutExtension(fileName), "_", attachment.ContentDisposition.FileName))))
+                        )
                     );
+                }
+                xmlMailMessage.Add(xmlAttachments);
+
+                xmlMailMessage.Save(Path.Combine(path, fileName));
+                return fileName;
             }
-            // attachments
-            XElement xmlAttachments = new XElement("Attachments");
-            foreach (Attachment attachment in message.Attachments)
+            else
             {
-
-                xmlAttachments.Add(new XElement("Attachment",
-                    new XElement("Name", attachment.Name),
-                    new XElement("ContentType", attachment.ContentType ?? ""),
-                    new XElement("ContentDisposition",
-                        new XElement("Type", attachment.ContentDisposition.DispositionType ?? ""),
-                        new XElement("FileName", attachment.ContentDisposition.FileName ?? ""),
-                        new XElement("CreationDate", attachment.ContentDisposition.CreationDate),
-                        new XElement("ModificationDate", attachment.ContentDisposition.ModificationDate),
-                        new XElement("ReadDate", attachment.ContentDisposition.ReadDate),
-                        new XElement("Size", attachment.Size)
-                        ),
-                    new XElement("Size", attachment.Size),
-                    new XElement("TransferEncoding", attachment.TransferEncoding),
-                    new XElement("FileName", Path.GetFileName(attachment.SaveToFile(path, String.Concat(Path.GetFileNameWithoutExtension(fileName), "_", attachment.ContentDisposition.FileName))))
-                    )
-                );
+                return String.Empty;
             }
-
-            // build xml file
-            XDocument xmlMailMessage = new XDocument(
-                new XDeclaration("1.0", "utf-8", "yes"),
-                new XElement("MailMessage",
-                    new XElement("MessageID", message.MessageID),
-                    xmlConversation,
-                    new XElement("From", MailAddressToXml(message.From)),
-                    new XElement("To", MailAddressListToXml(message.To)),
-                    new XElement("CC", MailAddressListToXml(message.CC)),
-                    new XElement("Bcc", MailAddressListToXml(message.Bcc)),
-                    new XElement("Subject", message.Subject),
-                    new XElement("Date", message.Date.ToString("r")),
-                    new XElement("Priority", message.Priority.ToString()),
-                    xmlHeaders,
-                    xmlAlternativeViews,
-                    xmlAttachments
-                    )
-                );
-            // save xml file
-            xmlMailMessage.Save(Path.Combine(path, fileName));
-            return fileName;
         }
 
         #region helper methods

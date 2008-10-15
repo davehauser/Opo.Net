@@ -83,29 +83,32 @@ namespace Opo.Net.Mail
         /// <returns></returns>
         public string ToString(string format)
         {
-            format = format.Replace("{address", "{0").Replace("{displayname", "{1");
-            return String.Format(format, this.Address, this.DisplayName);
+            format = format.Replace("{address", "{0")
+                           .Replace("{displayname", "{1")
+                           .Replace("{accountname", "{2")
+                           .Replace("{domain", "{3");
+            return String.Format(format, this.Address, this.DisplayName, this.AccountName, this.Domain);
         }
 
         #region Static methods
-        public static MailAddress Parse(string MailAddress)
+        public static MailAddress Parse(string mailAddress)
         {
             Regex r = new Regex(@"(?<Address>([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?))");
-            Match m = r.Match(MailAddress);
+            Match m = r.Match(mailAddress);
             if (m.Groups["Address"].Length <= 0)
-                throw new ArgumentException("mailAddres contains no valid email address.");
+                throw new ArgumentException("mailAddress contains no valid email address.");
             MailAddress address = new MailAddress(m.Groups["Address"].Value);
-            address.DisplayName = r.Replace(MailAddress, "").Replace("\"", "").Replace("<", "").Replace(">", "").Trim();
+            address.DisplayName = r.Replace(mailAddress, "").Replace("\"", "").Replace("<", "").Replace(">", "").Trim();
             return address;
         }
-        public static string GetDomain(MailAddress address)
+        public static string GetDomain(MailAddress mailAddress)
         {
-            string a = address.Address;
+            string a = mailAddress.Address;
             return a.Substring(a.IndexOf('@') + 1);
         }
-        public static string GetAccountName(MailAddress address)
+        public static string GetAccountName(MailAddress mailAddress)
         {
-            string a = address.Address;
+            string a = mailAddress.Address;
             return a.Substring(0, a.IndexOf('@'));
         }
         #endregion
