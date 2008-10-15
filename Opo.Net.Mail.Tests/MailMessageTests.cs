@@ -39,10 +39,10 @@ namespace Opo.Net.Mail
             Assert.That(mailMessage.BodyType, Is.EqualTo(MailMessageBodyType.Default));
 
             mailMessage = new MailMessage(_from.Object, _to.Object, _subject, _body, _type);
-            Assert.That(mailMessage.From.Address, Is.EqualTo("from@example.org"));
-            Assert.That(mailMessage.From.DisplayName, Is.EqualTo("From Address"));
-            Assert.That(mailMessage.To.First().Address, Is.EqualTo("to@example.org"));
-            Assert.That(mailMessage.To.First().DisplayName, Is.EqualTo("To Address"));
+            Assert.That(mailMessage.From.Address, Is.EqualTo(_from.Object.Address));
+            Assert.That(mailMessage.From.DisplayName, Is.EqualTo(_from.Object.DisplayName));
+            Assert.That(mailMessage.To.First().Address, Is.EqualTo(_to.Object.Address));
+            Assert.That(mailMessage.To.First().DisplayName, Is.EqualTo(_to.Object.DisplayName));
             Assert.That(mailMessage.Subject, Is.EqualTo(_subject));
             Assert.That(mailMessage.Body, Is.EqualTo(_body));
             Assert.That(mailMessage.BodyType, Is.EqualTo(MailMessageBodyType.Html));
