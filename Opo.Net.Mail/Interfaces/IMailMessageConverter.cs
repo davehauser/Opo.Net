@@ -7,8 +7,10 @@ namespace Opo.Net.Mail
 {
     public interface IMailMessageConverter
     {
-        IMailMessage LoadFromFile(string filePath);
-        string SaveToFile(IMailMessage message, string path);
-        string SaveToFile(IMailMessage message, string path, string fileName);
+        IMailMessage ConvertFrom(object data);
+        object ConvertTo(IMailMessage mailMessage);
+        IMailMessage LoadFromFile(string path);
+        string SaveToFile(IMailMessage mailMessage, string path);
+        string SaveToFile(IMailMessage mailMessage, string path, string fileName);
     }
 }
