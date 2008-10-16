@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Opo.ProjectBase, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Solution Items\Opo.ProjectBase.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -45,7 +49,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttachmentMimeEntity.cs" />
     <Compile Include="ContentDisposition.cs" />
+    <Compile Include="Interfaces\IMimeEntity.cs" />
+    <Compile Include="Interfaces\IMimeParser.cs" />
+    <Compile Include="MimeEncoding.cs" />
+    <Compile Include="MimeEntityBase.cs" />
+    <Compile Include="MimeEntityFactory.cs" />
+    <Compile Include="RegexMimeParser.cs" />
+    <Compile Include="TextMimeEntity.cs" />
     <Compile Include="TransferEncoding.cs" />
     <Compile Include="MediaTypeNames.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
