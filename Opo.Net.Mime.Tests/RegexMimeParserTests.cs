@@ -122,6 +122,7 @@ namespace Opo.Net.Mime
         [Test]
         public void CanParseContent()
         {
+            System.Diagnostics.Debug.WriteLine(regexMimeParser.ParseContent(TestMimeMessage.mimeData));
             Assert.That(regexMimeParser.ParseContent(TestMimeMessage.mimeData), Is.EqualTo(TestMimeMessage.content.Trim()));
         }
     }
