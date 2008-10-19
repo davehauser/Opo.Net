@@ -7,7 +7,7 @@ using NUnit.Framework.SyntaxHelpers;
 
 namespace Opo.Net.Mail
 {
-    [TestFixture]
+    [TestFixture(Description = "Tests for Opo.Net.Mail.Pop3Client")]
     public class Pop3ClientTests
     {
         private string host = "example.org";

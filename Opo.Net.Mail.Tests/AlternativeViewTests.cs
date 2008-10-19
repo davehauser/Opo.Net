@@ -8,7 +8,7 @@ using NUnit.Framework.SyntaxHelpers;
 
 namespace Opo.Net.Mail
 {
-    [TestFixture(Description="Tests for AlternativeView")]
+    [TestFixture(Description = "Tests for AlternativeView")]
     public class AlternativeViewTests
     {
         string _content = "Content";

@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="AlternativeViewTests.cs" />
     <Compile Include="AttachmentTests.cs" />
+    <Compile Include="ContentDispositionTests.cs" />
     <Compile Include="MailAddressTests.cs" />
     <Compile Include="MailAddressCollectionTests.cs" />
     <Compile Include="MailHeaderTests.cs" />
