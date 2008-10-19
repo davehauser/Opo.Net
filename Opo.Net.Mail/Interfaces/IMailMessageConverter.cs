@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Opo.Net.Mail
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IMailMessageConverter
     {
         IMailMessage ConvertFrom(object data);

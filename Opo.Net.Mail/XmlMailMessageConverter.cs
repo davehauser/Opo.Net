@@ -9,13 +9,26 @@ using System.Xml;
 
 namespace Opo.Net.Mail
 {
+    /// <summary>
+    /// Converts a Opo.Net.Mail.MailMessage to Xml and vice versa
+    /// </summary>
     public class XmlMailMessageConverter : IMailMessageConverter
     {
+        /// <summary>
+        /// Converts XML data to MailMessage
+        /// </summary>
+        /// <param name="data">An XElement or a String containing the XML data</param>
+        /// <returns>A new instance of the MailMessage class</returns>
         public IMailMessage ConvertFrom(object data)
         {
             XElement xmlMessage = data as XElement;
             if (xmlMessage == null)
-                return null;
+            {
+                if (data is string)
+                    xmlMessage = XElement.Parse(data as string);
+                else
+                    return null;
+            }
 
             IMailMessage message = new MailMessage();
 
@@ -69,6 +82,11 @@ namespace Opo.Net.Mail
             return message;
         }
 
+        /// <summary>
+        /// Converts an IMailMessage to XML data
+        /// </summary>
+        /// <param name="mailMessage">IMailMessage to convert</param>
+        /// <returns>An XElement representing the IMailMessage</returns>
         public object ConvertTo(IMailMessage mailMessage)
         {
             // conversation ids
@@ -115,6 +133,11 @@ namespace Opo.Net.Mail
             return xmlMailMessage;
         }
 
+        /// <summary>
+        /// Loads an XML file to a IMailMessage
+        /// </summary>
+        /// <param name="filePath">Absolute path to the xml file</param>
+        /// <returns>A new instance of the MailMessage class</returns>
         public IMailMessage LoadFromFile(string filePath)
         {
             string mailPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
@@ -148,12 +171,25 @@ namespace Opo.Net.Mail
             return message;
         }
 
+        /// <summary>
+        /// Saves a IMailMessage to a XML file
+        /// </summary>
+        /// <param name="mailMessage">IMailMessage to convert</param>
+        /// <param name="path">Absolute path where the XML file is saved</param>
+        /// <returns>A String containing the generated filename of the XML file</returns>
         public string SaveToFile(IMailMessage mailMessage, string path)
         {
             string fileName = String.Concat(mailMessage.MessageID, ".xml");
             return SaveToFile(mailMessage, path, fileName);
         }
 
+        /// <summary>
+        /// Saves a IMailMessage to a XML file
+        /// </summary>
+        /// <param name="mailMessage">IMailMessage to convert</param>
+        /// <param name="path">Absolute path where the XML file is saved</param>
+        /// <param name="fileName">Filename for the XML file</param>
+        /// <returns>A String containing the filename of the XML file</returns>
         public string SaveToFile(IMailMessage mailMessage, string path, string fileName)
         {
             XDocument xmlMailMessage = ConvertTo(mailMessage) as XDocument;

@@ -7,6 +7,9 @@ using Opo.Net.Mime;
 
 namespace Opo.Net.Mail
 {
+    /// <summary>
+    /// Represents an attachment
+    /// </summary>
     public class Attachment : IAttachment
     {
         private string _content;
@@ -14,13 +17,34 @@ namespace Opo.Net.Mail
         private string _filePath;
         private AttachmentType _type;
 
+        /// <summary>
+        /// Gets or sets the size of the attachment in bytes
+        /// </summary>
         public long Size { get; set; }
+        /// <summary>
+        /// Gets or sets the Content-Type of the attachment
+        /// </summary>
         public string ContentType { get; set; }
+        /// <summary>
+        /// Gets or sets the Name of the attachment
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Gets or sets the Content-Transfer-Encoding
+        /// </summary>
         public string TransferEncoding { get; set; }
+        /// <summary>
+        /// Gets or sets the Content-Disposition
+        /// </summary>
         public ContentDisposition ContentDisposition { get; set; }
 
-        // string content
+        /// <summary>
+        /// Initializes a new instance of the Attachment class setting the content as a String
+        /// </summary>
+        /// <param name="name">Name of the attachment</param>
+        /// <param name="content">A String containing the content</param>
+        /// <param name="contentType">Content-Type of the attachment (e.g. "image/gif")</param>
+        /// <param name="transferEncoding">Content-Transfer-Encoding (e.g. "base64")</param>
         public Attachment(string name, string content, string contentType, string transferEncoding)
         {
             Name = name;
@@ -37,7 +61,12 @@ namespace Opo.Net.Mail
             };
             _type = AttachmentType.String;
         }
-        // stream content
+        /// <summary>
+        /// Initializes a new instance of the Attachment class setting the content as a Stream
+        /// </summary>
+        /// <param name="name">Name of the attachment</param>
+        /// <param name="content">A Stream containing the content</param>
+        /// <param name="transferEncoding">Content-Transfer-Encoding (e.g. "base64")</param>
         public Attachment(string name, Stream content, string transferEncoding)
         {
             Name = name;
@@ -52,11 +81,19 @@ namespace Opo.Net.Mail
             };
             _type = AttachmentType.Stream;
         }
-        // file content
+        /// <summary>
+        /// Initializes a new instance of the Attachment class setting the content as a file. TransferEncoding is set to "base64"
+        /// </summary>
+        /// <param name="filePath">Absolute path to the attachment file</param>
         public Attachment(string filePath)
         {
             new Attachment(filePath, Mime.TransferEncoding.Base64);
         }
+        /// <summary>
+        /// Initializes a new instance of the Attachment class setting the content as a file
+        /// </summary>
+        /// <param name="filePath">Absolute path to the attachment file</param>
+        /// <param name="transferEncoding">Content-Transfer-Encoding (e.g. "base64")</param>
         public Attachment(string filePath, string transferEncoding)
         {
             if (!File.Exists(filePath))
@@ -76,11 +113,19 @@ namespace Opo.Net.Mail
             _type = AttachmentType.File;
         }
 
+        /// <summary>
+        /// Returns the name of the attachment
+        /// </summary>
+        /// <returns>A String representing the name of the attachment</returns>
         public override string ToString()
         {
             return Name;
         }
 
+        /// <summary>
+        /// Gets the attachments content as a Stream
+        /// </summary>
+        /// <returns>A Stream containing the attachments content</returns>
         public Stream GetContentStream()
         {
             switch (_type)
@@ -103,10 +148,21 @@ namespace Opo.Net.Mail
             }
             return null;
         }
+        /// <summary>
+        /// Saves the attachment to a file
+        /// </summary>
+        /// <param name="path">Absolute path where the file is saved. Filename is set to the name of the attachment</param>
+        /// <returns>A String containing the files path</returns>
         public string SaveToFile(string path)
         {
             return SaveToFile(path, Guid.NewGuid().ToString());
         }
+        /// <summary>
+        /// Saves the attachment to a file
+        /// </summary>
+        /// <param name="path">Absolute path where the file is saved</param>
+        /// <param name="fileName">Filename for the attachment file</param>
+        /// <returns>A string containing the files path</returns>
         public string SaveToFile(string path, string fileName)
         {
             string savePath = Path.Combine(path, fileName);
