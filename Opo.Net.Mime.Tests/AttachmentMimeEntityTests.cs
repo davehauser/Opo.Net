@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Opo.Net.Mime
 {
-    [TestFixture]
+    [TestFixture(Description = "Tests for Opo.Net.Mime.AttachmentMimeEntity")]
     public class AttachmentMimeEntityTests
     {
         Mock<IMimeParser> _mimeParser = new Mock<IMimeParser>();
@@ -33,7 +33,7 @@ namespace Opo.Net.Mime
             Assert.That(mimeEntity.ContentType, Is.EqualTo(TestMimeMessage.contentType));
             Assert.That(mimeEntity.ContentTransferEncoding, Is.EqualTo(TestMimeMessage.attachmentContentTransferEncoding));
 
-            mimeEntity = new AttachmentMimeEntity(_mimeParser.Object, TestMimeMessage.mimeData, TestMimeMessage.contentType);
+            mimeEntity = new AttachmentMimeEntity(_mimeParser.Object, TestMimeMessage.mimeData);
             Assert.That(mimeEntity.ContentType, Is.EqualTo(TestMimeMessage.contentType));
             Assert.That(mimeEntity.MimeData, Is.EqualTo(TestMimeMessage.mimeData));
         }
@@ -41,11 +41,10 @@ namespace Opo.Net.Mime
         [Test]
         public void CanGetContentStream()
         {
-            AttachmentMimeEntity mimeEntity = new AttachmentMimeEntity(_mimeParser.Object, TestMimeMessage.contentType, TestMimeMessage.mimeData);
+            AttachmentMimeEntity mimeEntity = new AttachmentMimeEntity(_mimeParser.Object, TestMimeMessage.contentType);
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
             using (MemoryStream expected = new MemoryStream(encoding.GetBytes(TestMimeMessage.content)))
             {
-                System.Diagnostics.Debug.WriteLine("");
                 Assert.That(mimeEntity.GetContent().Length, Is.EqualTo(expected.Length));
             }
         }

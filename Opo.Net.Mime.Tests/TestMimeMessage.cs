@@ -5,8 +5,12 @@ using System.Text;
 
 namespace Opo.Net.Mime
 {
+    /// <summary>
+    /// Helper class for the Opo.Net.Mime Tests. Provides a test MIME message
+    /// </summary>
     public static class TestMimeMessage
     {
+        #region values
         public static string[] emailAdresses = new string[]
         {
             "\"Address 1\" <email1@example.org>",
@@ -196,40 +200,72 @@ HQPSmc4anN/26QAo7wkKAAACVP2xHbc2ym8bAAB0HdXlDTvIQxB1rDNH67slLG99LnconL3ub996
 3PMu4b4H9+lXx/rFBQ/ctAN+Uxcfu24Jv3iPEwDxuU174SPfIQGAXezLzSsB1H55zO9c7XV9e10/
 /3fRq371rG+9618P+9jLfva0r73tb4/73Ot+97zvve9/D/zgC3/4xC++8Y+P/ORDPAEAOw==";
         #endregion
+        #endregion
 
         public static string mimeData = BuildMessage();
+        public static string textPart = BuildTextPart();
+        public static string htmlPart = BuildHtmlPart();
+        public static string attachmentPart = BuildAttachmentPart();
+        public static string multipartAlternativePart = BuildMultipartAlternativePart();
         public static string content = BuildContent();
 
+        private static string BuildMultipartAlternativePart()
+        {
+            StringBuilder multipartAlternativePart = new StringBuilder();
+            multipartAlternativePart.AppendLine("Content-Type: multipart/alternative;");
+            multipartAlternativePart.AppendLine("\tboundary=\"" + boundaryLevel2 + "\"");
+            multipartAlternativePart.AppendLine();
+            multipartAlternativePart.AppendLine("--" + boundaryLevel2);
+            multipartAlternativePart.AppendLine(BuildTextPart());
+            multipartAlternativePart.AppendLine("--" + boundaryLevel2);
+            multipartAlternativePart.AppendLine(BuildHtmlPart());
+            multipartAlternativePart.AppendLine("--" + boundaryLevel2);
+            return multipartAlternativePart.ToString();
+        }
+        private static string BuildTextPart()
+        {
+            StringBuilder textPart = new StringBuilder();
+            textPart.AppendLine("Content-Type: " + textBodyContentType + ";");
+            textPart.AppendLine("\tcharset=\"" + textBodyCharset + "\"");
+            textPart.AppendLine("Content-Transfer-Encoding: " + textBodyContentTransferEncoding);
+            textPart.AppendLine();
+            textPart.AppendLine(textBody);
+            return textPart.ToString();
+        }
+        private static string BuildHtmlPart()
+        {
+            StringBuilder htmlPart = new StringBuilder();
+            htmlPart.AppendLine("Content-Type: " + htmlBodyContentType);
+            htmlPart.AppendLine("\tcharset=\"" + htmlBodyCharset + "\"");
+            htmlPart.AppendLine("Content-Transfer-Encoding: " + htmlBodyContentTransferEncoding);
+            htmlPart.AppendLine();
+            htmlPart.AppendLine(htmlBody);
+            return htmlPart.ToString();
+        }
+        private static string BuildAttachmentPart()
+        {
+            StringBuilder attachmentPart = new StringBuilder();
+            attachmentPart.AppendLine("Content-Type: " + attachmentContentType + ";");
+            attachmentPart.AppendLine("\tname=\"" + attachmentName + "\"");
+            attachmentPart.AppendLine("Content-Transfer-Encoding: " + attachmentContentTransferEncoding);
+            attachmentPart.AppendLine("Content-Disposition: " + attachmentContentDisposition + ";");
+            attachmentPart.AppendLine("\tfilename=\"" + attachmentName + "\"");
+            attachmentPart.AppendLine();
+            attachmentPart.AppendLine(attachmentContent);
+            attachmentPart.AppendLine();
+            return attachmentPart.ToString();
+        }
         private static string BuildContent()
         {
             StringBuilder content = new StringBuilder();
-            content.AppendLine("Content-Type: multipart/alternative;");
-            content.AppendLine("\tboundary=\"" + boundaryLevel2 + "\"");
+            content.AppendLine("This is a multi-part message in MIME format.");
             content.AppendLine();
-            content.AppendLine("--" + boundaryLevel2);
-            content.AppendLine("Content-Type: " + textBodyContentType + ";");
-            content.AppendLine("\tcharset=\"" + textBodyCharset + "\"");
-            content.AppendLine("Content-Transfer-Encoding: " + textBodyContentTransferEncoding);
+            content.AppendLine("--" + boundaryLevel1);
+            content.AppendLine(BuildMultipartAlternativePart());
             content.AppendLine();
-            content.AppendLine(textBody);
-            content.AppendLine("--" + boundaryLevel2);
-            content.AppendLine("Content-Type: " + htmlBodyContentType);
-            content.AppendLine("\tcharset=\"" + htmlBodyCharset + "\"");
-            content.AppendLine("Content-Transfer-Encoding: " + htmlBodyContentTransferEncoding);
-            content.AppendLine();
-            content.AppendLine(htmlBody);
-            content.AppendLine("--" + boundaryLevel2);
-            content.AppendLine();
-            content.AppendLine("--" + boundaryLevel2);
-
-            content.AppendLine("Content-Type: " + attachmentContentType + ";");
-            content.AppendLine("\tname=\"" + attachmentName + "\"");
-            content.AppendLine("Content-Transfer-Encoding: " + attachmentContentTransferEncoding);
-            content.AppendLine("Content-Disposition: " + attachmentContentDisposition + ";");
-            content.AppendLine("\tfilename=\"" + attachmentName + "\"");
-            content.AppendLine();
-            content.AppendLine(attachmentContent);
-            content.AppendLine();
+            content.AppendLine("--" + boundaryLevel1);
+            content.AppendLine(BuildAttachmentPart());
+            content.Append("--" + boundaryLevel1);
             return content.ToString();
         }
         private static string BuildMessage()
@@ -247,11 +283,8 @@ HQPSmc4anN/26QAo7wkKAAACVP2xHbc2ym8bAAB0HdXlDTvIQxB1rDNH67slLG99LnconL3ub996
             mimeData.AppendLine("\tboundary=\"" + boundaryLevel1 + "\"");
             mimeData.AppendLine("X-Priority: " + priority);
             mimeData.AppendLine();
-            mimeData.AppendLine("This is a multi-part message in MIME format.");
             mimeData.AppendLine();
-            mimeData.AppendLine("--" + boundaryLevel1);
-            mimeData.AppendLine(BuildContent());
-            mimeData.AppendLine("--" + boundaryLevel1);
+            mimeData.Append(BuildContent());
 
             return mimeData.ToString();
         }

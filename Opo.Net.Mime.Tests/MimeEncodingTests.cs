@@ -7,7 +7,7 @@ using NUnit.Framework.SyntaxHelpers;
 
 namespace Opo.Net.Mime
 {
-    [TestFixture(Description="Tests for MimeEncoding")]
+    [TestFixture(Description = "Tests for MimeEncoding")]
     public class MimeEncodingTests
     {
         private string _plainText;
@@ -29,7 +29,7 @@ EFGHIJKL MNOPQ RSTUVW XYZ. abcdefgh ijkl mnopq rst uv wxyz. =E4=F6=FC=
         {
             Assert.That(MimeEncoding.QuotedPrintable.Encode(_plainText), Is.EqualTo(_quotedPrintableEncodedText));
         }
-        
+
         [Test]
         public void CanDecodeQuotedPrintable()
         {

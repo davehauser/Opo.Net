@@ -55,9 +55,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttachmentMimeEntityTests.cs" />
-    <Compile Include="ContentDispositionTests.cs" />
     <Compile Include="MimeEncodingTests.cs" />
-    <Compile Include="MimeEntityTests.cs" />
+    <Compile Include="MimeEntityCollectionTests.cs" />
+    <Compile Include="MimeEntityFactoryTests.cs" />
+    <Compile Include="MimeHeaderCollectionTests.cs" />
+    <Compile Include="MultipartMimeEntityTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegexMimeParserTests.cs" />
     <Compile Include="TestMimeMessage.cs" />

@@ -6,7 +6,7 @@ using Moq;
 
 namespace Opo.Net.Mime
 {
-    [TestFixture]
+    [TestFixture(Description = "Tests for Opo.Net.TextMimeEntity")]
     public class TextMimeEntityTests
     {
         private Mock<IMimeParser> _mimeParser = new Mock<IMimeParser>();
@@ -31,7 +31,7 @@ namespace Opo.Net.Mime
             Assert.That(mimeEntity.MimeData, Is.EqualTo(TestMimeMessage.mimeData));
             Assert.That(mimeEntity.ContentType, Is.EqualTo(TestMimeMessage.contentType));
 
-            mimeEntity = new TextMimeEntity(_mimeParser.Object, TestMimeMessage.mimeData, TestMimeMessage.contentType);
+            mimeEntity = new TextMimeEntity(_mimeParser.Object, TestMimeMessage.mimeData);
             Assert.That(mimeEntity.MimeData, Is.EqualTo(TestMimeMessage.mimeData));
             Assert.That(mimeEntity.ContentType, Is.EqualTo(TestMimeMessage.contentType));
         }
@@ -39,7 +39,7 @@ namespace Opo.Net.Mime
         [Test]
         public void CanGetContent()
         {
-            TextMimeEntity mimeEntity = new TextMimeEntity(_mimeParser.Object, TestMimeMessage.mimeData, TestMimeMessage.contentType);
+            TextMimeEntity mimeEntity = new TextMimeEntity(_mimeParser.Object, TestMimeMessage.mimeData);
             Assert.That(mimeEntity.GetContent(), Is.EqualTo(TestMimeMessage.content));
         }
     }
