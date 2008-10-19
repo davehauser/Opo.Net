@@ -6,8 +6,14 @@ using System.Text.RegularExpressions;
 
 namespace Opo.Net.Mime
 {
+    /// <summary>
+    /// Methods for encoding and decoding MIME content
+    /// </summary>
     public static class MimeEncoding
     {
+        /// <summary>
+        /// Encode and decode data with base64 encoding
+        /// </summary>
         public static class Base64
         {
             /// <summary>
@@ -60,6 +66,12 @@ namespace Opo.Net.Mime
                 //    return Convert.ToBase64String(memStream.ToArray(),Base64FormattingOptions.InsertLineBreaks);
                 //}
             }
+            /// <summary>
+            /// Limits the line length of a string and inserts linebreaks after the given maximum line length
+            /// </summary>
+            /// <param name="s">A String which is to be processed</param>
+            /// <param name="maxLineLength">An Int32 declaring the maximum line length</param>
+            /// <returns></returns>
             private static string LimitLineLength(string s, int maxLineLength)
             {
                 if (s.Length < maxLineLength)
@@ -106,6 +118,9 @@ namespace Opo.Net.Mime
             }
         }
 
+        /// <summary>
+        /// Encode and decode data with quoted-printable
+        /// </summary>
         public static class QuotedPrintable
         {
             /// <summary>
@@ -147,6 +162,12 @@ namespace Opo.Net.Mime
                 int dec = (int)character;
                 return "=" + dec.ToString("X");
             }
+            /// <summary>
+            /// Limits the line length of a string and inserts linebreaks after the given maximum line length
+            /// </summary>
+            /// <param name="s">A String which is to be processed</param>
+            /// <param name="maxLineLength">An Int32 declaring the maximum line length</param>
+            /// <returns></returns>
             private static string LimitLineLength(string s, int maxLineLength)
             {
                 if (s.Length < maxLineLength)

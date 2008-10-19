@@ -7,6 +7,10 @@ using System.Net.Mime;
 
 namespace Opo.Net.Mime
 {
+    /// <summary>
+    /// Static class which contains all different sorts of Internet Media Types (MIME Types)
+    /// </summary>
+    /// <remarks>Further information on MIME Types: http://www.iana.org/assignments/media-types/ </remarks>
     public static class MediaType
     {
         public static class Application
@@ -77,6 +81,11 @@ namespace Opo.Net.Mime
             public const string Wmv = "video/x-ms-wmv";
         }
 
+        /// <summary>
+        /// Tries to define the Media Type of a file by its file name
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns>A String containing the Internet Media Type. If the file extension is unknown "application/octet" is returned.</returns>
         public static string GetMediaType(string fileName)
         {
             string extension = Path.GetExtension(fileName);

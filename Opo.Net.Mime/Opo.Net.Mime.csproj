@@ -50,9 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttachmentMimeEntity.cs" />
-    <Compile Include="ContentDisposition.cs" />
     <Compile Include="Interfaces\IMimeEntity.cs" />
     <Compile Include="Interfaces\IMimeParser.cs" />
+    <Compile Include="MimeEntityCollection.cs" />
+    <Compile Include="MultipartMimeEntity.cs" />
     <Compile Include="MimeEncoding.cs" />
     <Compile Include="MimeEntityBase.cs" />
     <Compile Include="MimeEntityFactory.cs" />
