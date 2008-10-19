@@ -53,8 +53,9 @@
     <Compile Include="AlternativeView.cs" />
     <Compile Include="Attachment.cs" />
     <Compile Include="AttachmentCollection.cs" />
+    <Compile Include="ContentDisposition.cs" />
     <Compile Include="Enums\AttachmentType.cs" />
-    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="Interfaces\IAlternativeView.cs" />
     <Compile Include="Interfaces\IAlternativeViewCollection.cs" />
     <Compile Include="Interfaces\IAttachment.cs" />

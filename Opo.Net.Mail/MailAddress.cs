@@ -5,9 +5,6 @@ namespace Opo.Net.Mail
 {
     public class MailAddress : IMailAddress
     {
-        /// <summary>
-        /// Address part of the mail address, e.g. "email@sample.org"
-        /// </summary>
         private string _address;
         
         /// <summary>
@@ -33,13 +30,13 @@ namespace Opo.Net.Mail
         public string DisplayName { get; set; }
         
         /// <summary>
-        /// Gets or sets the domain part of the address (the part after the &#64;)
+        /// Gets or sets the host part of the address (the part after the &#64;)
         /// </summary>
-        public string Domain
+        public string Host
         {
             get
             {
-                return GetDomain(this);
+                return GetHost(this);
             }
             set
             {
@@ -58,15 +55,24 @@ namespace Opo.Net.Mail
             }
             set
             {
-                this._address = String.Format("{0}@{1}", value, GetDomain(this));
+                this._address = String.Format("{0}@{1}", value, GetHost(this));
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the MailAddress class
+        /// </summary>
+        /// <param name="address">A String containing a valid email address</param>
         public MailAddress(string address)
         {
             this.Address = address;
             this.DisplayName = "";
         }
+        /// <summary>
+        /// Initializes a new instance of the MailAddress class
+        /// </summary>
+        /// <param name="address">A String containing a valid email address</param>
+        /// <param name="displayName">A String containing the display name</param>
         public MailAddress(string address, string displayName)
         {
             this.Address = address;
@@ -87,11 +93,17 @@ namespace Opo.Net.Mail
                            .Replace("{displayname", "{1")
                            .Replace("{accountname", "{2")
                            .Replace("{domain", "{3");
-            return String.Format(format, this.Address, this.DisplayName, this.AccountName, this.Domain);
+            return String.Format(format, this.Address, this.DisplayName, this.AccountName, this.Host);
         }
 
         #region Static methods
-        public static MailAddress Parse(string mailAddress)
+        /// <summary>
+        /// Parses a email address string
+        /// </summary>
+        /// <param name="mailAddress">A string containing a valid email address</param>
+        /// <returns>A new instance of an IMailAddress implementation</returns>
+        /// <exception cref="ArgumentException">Throws a ArgumentException if the email address is not valid</exception>
+        public static IMailAddress Parse(string mailAddress)
         {
             Regex r = new Regex(@"(?<Address>([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?))");
             Match m = r.Match(mailAddress);
@@ -101,11 +113,21 @@ namespace Opo.Net.Mail
             address.DisplayName = r.Replace(mailAddress, "").Replace("\"", "").Replace("<", "").Replace(">", "").Trim();
             return address;
         }
-        public static string GetDomain(MailAddress mailAddress)
+        /// <summary>
+        /// Gets the host part of a mail address
+        /// </summary>
+        /// <param name="mailAddress">Instance of the MailAddress class</param>
+        /// <returns>A String containing the host part of the mail address</returns>
+        public static string GetHost(MailAddress mailAddress)
         {
             string a = mailAddress.Address;
             return a.Substring(a.IndexOf('@') + 1);
         }
+        /// <summary>
+        /// Gets the account name part of a mail address
+        /// </summary>
+        /// <param name="mailAddress">Instance of the MailAddress class</param>
+        /// <returns>A String containing the account name part of the mail address</returns>
         public static string GetAccountName(MailAddress mailAddress)
         {
             string a = mailAddress.Address;
