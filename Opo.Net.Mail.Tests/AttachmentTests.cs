@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Opo.Net.Mail
 {
-    [TestFixture]
+    [TestFixture(Description = "Opo.Net.Mail.Attachment")]
     public class AttachmentTests
     {
         private string _name;
