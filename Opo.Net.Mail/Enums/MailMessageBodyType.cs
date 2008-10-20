@@ -5,8 +5,18 @@ using System.Text;
 
 namespace Opo.Net.Mail
 {
+    /// <summary>
+    /// Specifies the priority of a mail message
+    /// </summary>
     public enum MailMessageBodyType
     {
-        Default, Html, PlainText
+        /// <summary>
+        /// Type of the body content is HTML
+        /// </summary>
+        Html,
+        /// <summary>
+        /// Type of the body content is plain text
+        /// </summary>
+        PlainText
     }
 }
