@@ -55,9 +55,9 @@
     <Compile Include="AttachmentCollection.cs" />
     <Compile Include="ContentDisposition.cs" />
     <Compile Include="Enums\AttachmentType.cs" />
-    <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
+    <Compile Include="ExtensionMethods\StringExtensionMethods.cs" />
     <Compile Include="Interfaces\IAlternativeView.cs" />
-    <Compile Include="Interfaces\IAlternativeViewCollection.cs" />
+    <Compile Include="AlternativeViewCollection.cs" />
     <Compile Include="Interfaces\IAttachment.cs" />
     <Compile Include="Interfaces\IMailAddress.cs" />
     <Compile Include="Interfaces\IMailMessage.cs" />

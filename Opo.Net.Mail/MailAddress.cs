@@ -8,7 +8,7 @@ namespace Opo.Net.Mail
         private string _address;
         
         /// <summary>
-        /// Gets or sets the address part of the mail address, e.g. "email.sample.org"
+        /// Gets or sets the address part of the mail address, e.g. "email@sample.org"
         /// </summary>
         public string Address
         {
@@ -30,7 +30,7 @@ namespace Opo.Net.Mail
         public string DisplayName { get; set; }
         
         /// <summary>
-        /// Gets or sets the host part of the address (the part after the &#64;)
+        /// Gets or sets the host part of the address (the part after the @)
         /// </summary>
         public string Host
         {
@@ -45,7 +45,7 @@ namespace Opo.Net.Mail
         }
 
         /// <summary>
-        /// Gets or sets the account name of the address (the part before the &#64;)
+        /// Gets or sets the account name of the address (the part before the @)
         /// </summary>
         public string AccountName
         {
