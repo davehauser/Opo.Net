@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Opo.Net.Mime.AttachmentMimeEntity">
+    <Position X="5.5" Y="7" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAEAAAAAAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>AttachmentMimeEntity.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Opo.Net.Mime.MediaType">
+    <Position X="10.5" Y="4.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Opo.Net.Mime.MediaType.Application" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>MediaTypeNames.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Opo.Net.Mime.MediaType.Audio" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>MediaTypeNames.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Opo.Net.Mime.MediaType.Image" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>MediaTypeNames.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Opo.Net.Mime.MediaType.Message" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>MediaTypeNames.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Opo.Net.Mime.MediaType.Multipart" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>MediaTypeNames.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Opo.Net.Mime.MediaType.Text" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>MediaTypeNames.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Opo.Net.Mime.MediaType.Video" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>MediaTypeNames.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MediaTypeNames.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Opo.Net.Mime.MimeEncoding">
+    <Position X="8.5" Y="6.25" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Opo.Net.Mime.MimeEncoding.Base64">
+        <TypeIdentifier>
+          <NewMemberFileName>MimeEncoding.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Opo.Net.Mime.MimeEncoding.QuotedPrintable">
+        <TypeIdentifier>
+          <NewMemberFileName>MimeEncoding.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MimeEncoding.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Opo.Net.Mime.MimeEntityBase">
+    <Position X="3" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAKAAAAAQJAAAAAAAQAAAACAAAAACAAAEQAAAAAAA=</HashCode>
+      <FileName>MimeEntityBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Opo.Net.Mime.MimeEntityCollection">
+    <Position X="0.5" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MimeEntityCollection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Opo.Net.Mime.MimeEntityFactory">
+    <Position X="0.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MimeEntityFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Opo.Net.Mime.MultipartMimeEntity">
+    <Position X="0.5" Y="7" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAgACAAAAAQAAEAAAAAAAAAIAAAAAACAACAAAAAAAAA=</HashCode>
+      <FileName>MultipartMimeEntity.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Opo.Net.Mime.RegexMimeParser">
+    <Position X="8.5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>QABgAACABAAQAAMgAAAAAAAAAAABAEAAAAQAACEAAAA=</HashCode>
+      <FileName>RegexMimeParser.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Opo.Net.Mime.TextMimeEntity">
+    <Position X="3" Y="7" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>TextMimeEntity.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Opo.Net.Mime.TransferEncoding">
+    <Position X="8.5" Y="4.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAgBA=</HashCode>
+      <FileName>TransferEncoding.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Opo.Net.Mime.IMimeParser">
+    <Position X="6.5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>QABgAACABAAQAAMgAAAAAAAAAAABAEAAAAQAAAEAAAA=</HashCode>
+      <FileName>Interfaces\IMimeParser.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Opo.Net.Mime.IMimeEntity">
+    <Position X="3" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAKAAAAAQBAAAAAAAAAAAACAAAAACAAAEQAAAAAAA=</HashCode>
+      <FileName>Interfaces\IMimeEntity.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>
