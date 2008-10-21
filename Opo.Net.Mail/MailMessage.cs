@@ -97,7 +97,7 @@ namespace Opo.Net.Mail
             Headers = new MailHeaderCollection();
             Attachments = new AttachmentCollection();
             AlternateViews = new AlternativeViewCollection();
-            BodyType = MailMessageBodyType.Default;
+            BodyType = MailMessageBodyType.Html;
         }
 
         /// <summary>

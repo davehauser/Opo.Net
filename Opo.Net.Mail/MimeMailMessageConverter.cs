@@ -19,15 +19,35 @@ namespace Opo.Net.Mail
         /// <returns>A new instance of the MailMessage class</returns>
         public IMailMessage ConvertFrom(object data)
         {
-            string mimeData = data as string;
-            mimeData.Validate("data");
+            IMailMessage mailMessage;
+            if (data is String)
+            {
+                IMimeParser mimeParser = new RegexMimeParser();
+                mailMessage = ConvertFrom(mimeParser, data as String);
+            }
+            else
+            {
+                mailMessage = new MailMessage();
+            }
+            return mailMessage;
+        }
+
+        /// <summary>
+        /// Converts MIME data to MailMessage
+        /// </summary>
+        /// <param name="mimeParser">IMimeParser that is used to parse the MIME data</param>
+        /// <param name="mimeData">A String containing the MIME data</param>
+        /// <returns>A new instance of the MailMessage class</returns>
+        public IMailMessage ConvertFrom(IMimeParser mimeParser, string mimeData)
+        {
+            mimeData.Validate("mimeData");
 
             IMailMessage mailMessage = new MailMessage();
-            IMimeParser mimeParser = new RegexMimeParser();
             string contentType = mimeParser.ParseContentType(mimeData);
             IMimeEntity mimeEntity = MimeEntityFactory.GetInstance(mimeParser, contentType);
             mimeEntity.MimeData = mimeData;
-            
+            // TODO: convert mimeEntity to IMailMessage
+
             return mailMessage;
         }
 
