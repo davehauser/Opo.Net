@@ -12,6 +12,7 @@ namespace Opo.Net.Mime
     {
         private string _plainText;
         private string _quotedPrintableEncodedText;
+        private string _base64EncodedText;
 
         [TestFixtureSetUp]
         public void FixtureSetup()
@@ -22,6 +23,9 @@ EFGHIJKL MNOPQ RSTUVW XYZ. abcdefgh ijkl mnopq rst uv wxyz. äöü éèê =-_ ?!
             _quotedPrintableEncodedText = @"ABCD
 EFGHIJKL MNOPQ RSTUVW XYZ. abcdefgh ijkl mnopq rst uv wxyz. =E4=F6=FC=
  =E9=E8=EA =3D-_ ?!()/&%=E7*+""";
+
+            _base64EncodedText = @"QUJDRA0KRUZHSElKS0wgTU5PUFEgUlNUVVZXIFhZWi4gYWJjZGVmZ2ggaWprbCBtbm9wcSByc3Qg
+dXYgd3h5ei4gPz8/ID8/PyA9LV8gPyEoKS8mJT8qKyI=";
         }
 
         [Test]
@@ -39,7 +43,7 @@ EFGHIJKL MNOPQ RSTUVW XYZ. abcdefgh ijkl mnopq rst uv wxyz. =E4=F6=FC=
         [Test]
         public void CanEncodeBase64()
         {
-            throw new NotImplementedException();
+            Assert.That(MimeEncoding.Base64.Encode(_plainText), Is.EqualTo(_base64EncodedText));
         }
 
         [Test]
