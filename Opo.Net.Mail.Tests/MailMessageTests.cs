@@ -36,7 +36,7 @@ namespace Opo.Net.Mail
         public void CanCreateMailMessage()
         {
             MailMessage mailMessage = new MailMessage();
-            Assert.That(mailMessage.BodyType, Is.EqualTo(MailMessageBodyType.Default));
+            Assert.That(mailMessage.BodyType, Is.EqualTo(MailMessageBodyType.Html));
 
             mailMessage = new MailMessage(_from.Object, _to.Object, _subject, _body, _type);
             Assert.That(mailMessage.From.Address, Is.EqualTo(_from.Object.Address));
