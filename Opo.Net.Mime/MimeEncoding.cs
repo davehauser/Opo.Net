@@ -23,76 +23,21 @@ namespace Opo.Net.Mime
             /// <returns>Base64 encoded string</returns>
             public static string Encode(object obj)
             {
-                using (MemoryStream memStream = new MemoryStream())
+                byte[] byteObj;
+                if (obj is String)
                 {
-                    new BinaryFormatter().Serialize(memStream, obj);
-                    return Convert.ToBase64String(memStream.ToArray());
+                    byteObj = Encoding.ASCII.GetBytes((obj as String).ToCharArray());
                 }
-            }
-            //public static string Encode(object obj)
-            //{
-            //    return Encode(obj, Encoding.Default);
-            //}
-            public static string Encode(object obj, Encoding encoding)
-            {
-                byte[] encData;
-                MemoryStream s = new MemoryStream();
-                BinaryFormatter formatter = new BinaryFormatter();
-                try
+                else
                 {
-                    formatter.Serialize(s, obj);
-                    encData = s.ToArray();
-                }
-                catch 
-                {
-                    encData = null;
-                }
-                finally
-                {
-                    s.Close();
-                }
-
-                return Convert.ToBase64String(encData);
-                //byte[] encData_byte = new byte[obj.ToString().Length];
-                //encData_byte = System.Text.Encoding.UTF8.GetBytes(obj.ToString());
-                //string encodedData = Convert.ToBase64String(encData_byte);
-
-                //return LimitLineLength(encodedData, 76);
-                //return Convert.ToBase64String(Encoding.GetEncoding(encoding.WebName).GetBytes(obj.ToString()));
-
-                //using (MemoryStream memStream = new MemoryStream())
-                //{
-                //    new BinaryFormatter().Serialize(memStream, obj);
-                //    return Convert.ToBase64String(memStream.ToArray(),Base64FormattingOptions.InsertLineBreaks);
-                //}
-            }
-            /// <summary>
-            /// Limits the line length of a string and inserts linebreaks after the given maximum line length
-            /// </summary>
-            /// <param name="s">A String which is to be processed</param>
-            /// <param name="maxLineLength">An Int32 declaring the maximum line length</param>
-            /// <returns></returns>
-            private static string LimitLineLength(string s, int maxLineLength)
-            {
-                if (s.Length < maxLineLength)
-                    return s;
-
-                StringBuilder formattedText = new StringBuilder();
-                while (true)
-                {
-                    if (s.Length < maxLineLength)
+                    using (MemoryStream memoryStream = new MemoryStream())
                     {
-                        formattedText.Append(s);
-                        break;
+                        BinaryFormatter binaryFormatter = new BinaryFormatter();
+                        binaryFormatter.Serialize(memoryStream, obj);
+                        byteObj = memoryStream.GetBuffer();
                     }
-                    else
-                    {
-                        formattedText.AppendLine(s.Substring(0, maxLineLength));
-                        s = s.Remove(0, maxLineLength);
-                    }
-                    System.Diagnostics.Debug.Write(formattedText + Environment.NewLine + " - - - - - - - - - - - -");
                 }
-                return formattedText.ToString();
+                return Convert.ToBase64String(byteObj, Base64FormattingOptions.InsertLineBreaks);
             }
 
             /// <summary>
