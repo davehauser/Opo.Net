@@ -49,7 +49,7 @@ dXYgd3h5ei4gPz8/ID8/PyA9LV8gPyEoKS8mJT8qKyI=";
         [Test]
         public void CanDecodeBase64()
         {
-            throw new NotImplementedException();
+            Assert.That(MimeEncoding.Base64.Decode<string>(_base64EncodedText), Is.EqualTo(_plainText));
         }
     }
 }

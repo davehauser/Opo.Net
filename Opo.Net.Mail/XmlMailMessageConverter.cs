@@ -35,10 +35,9 @@ namespace Opo.Net.Mail
             if (xmlMessage == null)
                 return new MailMessage();
             message.MessageID = xmlMessage.Element("MessageID").Value;
-            message.UID = xmlMessage.Element("UID").Value;
             message.From = MailAddressFromXml(xmlMessage.Descendants("From").FirstOrDefault());
             message.To = MailAddressListFromXml(xmlMessage.Descendants("To").Elements().ToArray());
-            message.CC = MailAddressListFromXml(xmlMessage.Descendants("CC").Elements().ToArray());
+            message.Cc = MailAddressListFromXml(xmlMessage.Descendants("CC").Elements().ToArray());
             message.Bcc = MailAddressListFromXml(xmlMessage.Descendants("Bcc").Elements().ToArray());
             message.Subject = xmlMessage.Descendants("Subject").FirstOrDefault().Value;
             message.ReferenceIDs = ReferenceIDsFromXml(xmlMessage.Descendants("Conversation").Elements().ToArray());
@@ -121,7 +120,7 @@ namespace Opo.Net.Mail
                     xmlConversation,
                     new XElement("From", MailAddressToXml(mailMessage.From)),
                     new XElement("To", MailAddressListToXml(mailMessage.To)),
-                    new XElement("CC", MailAddressListToXml(mailMessage.CC)),
+                    new XElement("CC", MailAddressListToXml(mailMessage.Cc)),
                     new XElement("Bcc", MailAddressListToXml(mailMessage.Bcc)),
                     new XElement("Subject", mailMessage.Subject),
                     new XElement("Date", mailMessage.Date.ToString("r")),

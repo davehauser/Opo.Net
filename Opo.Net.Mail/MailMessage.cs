@@ -21,10 +21,6 @@ namespace Opo.Net.Mail
         /// </summary>
         public List<string> ReferenceIDs { get; set; }
         /// <summary>
-        /// Gets or sets a mail server specific unique ID
-        /// </summary>
-        public string UID { get; set; }
-        /// <summary>
         /// Gets or set the Subject
         /// </summary>
         public string Subject { get; set; }
@@ -39,7 +35,7 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Gets or sets the address collection that contains the carbon copy (CC) recipients for this e-mail message
         /// </summary>
-        public MailAddressCollection CC { get; set; }
+        public MailAddressCollection Cc { get; set; }
         /// <summary>
         /// Gets or sets the address collection that contains the blind carbon copy (BCC) recipients for this e-mail message
         /// </summary>
@@ -47,7 +43,7 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Gets or sets the ReplyTo address for the mail message
         /// </summary>
-        public MailAddress ReplyTo { get; set; }
+        public IMailAddress ReplyTo { get; set; }
         /// <summary>
         /// Gets or sets the message body
         /// </summary>
@@ -92,7 +88,7 @@ namespace Opo.Net.Mail
         {
             ReferenceIDs = new List<string>();
             To = new MailAddressCollection();
-            CC = new MailAddressCollection();
+            Cc = new MailAddressCollection();
             Bcc = new MailAddressCollection();
             Headers = new MailHeaderCollection();
             Attachments = new AttachmentCollection();
