@@ -20,20 +20,16 @@ namespace Opo.Net.Mime
         /// <returns>A String array containing the headers of the MIME message</returns>
         public string[] ParseHeaders(string mimeData)
         {
-            System.Diagnostics.Debug.WriteLine("RegexMimeParser.ParseHeaders()");
-            System.Diagnostics.Debug.WriteLine(mimeData);
             mimeData.Validate("mimeData");
 
             Regex r = new Regex(@"(\r\n\s*){2,}");
             string headerPart = r.Split(mimeData)[0];
-            System.Diagnostics.Debug.WriteLine(headerPart);
 
             r = new Regex(@"(?<Header>.+:\s+[^\r\n]*(\r\n[\t ]+[^\r\n]+)*)");
             MatchCollection mc = r.Matches(headerPart);
             IList<string> headers = new List<string>();
             foreach (Match match in mc)
             {
-                System.Diagnostics.Debug.WriteLine(match.Groups["Header"].Value);
                 headers.Add(match.Groups["Header"].Value);
             }
             return headers.ToArray();

@@ -64,6 +64,7 @@
     <Compile Include="RegexMimeParserTests.cs" />
     <Compile Include="TestMimeMessage.cs" />
     <Compile Include="TextMimeEntityTests.cs" />
+    <Compile Include="MimeUtilitiesTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Opo.Net.Mime\Opo.Net.Mime.csproj">
