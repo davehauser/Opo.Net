@@ -17,6 +17,9 @@ namespace Opo.Net.Mail
         {
             _mimeParser.Expect(m => m.ParseHeaderValue(It.IsAny<string>(), "Subject")).Returns(TestMimeMessage.subject);
             _mimeParser.Expect(m => m.ParseHeaderValue(It.IsAny<string>(), "From")).Returns(TestMimeMessage.from);
+            _mimeParser.Expect(m => m.ParseHeaderValue(It.IsAny<string>(), "To")).Returns(TestMimeMessage.toPlain);
+            _mimeParser.Expect(m => m.ParseHeaderValue(It.IsAny<string>(), "CC")).Returns(TestMimeMessage.cc);
+            _mimeParser.Expect(m => m.ParseHeaderValue(It.IsAny<string>(), "BCC")).Returns(TestMimeMessage.bcc);
             _mimeParser.Expect(m => m.ParseHeaderValue(It.IsAny<string>(), "Message-ID")).Returns(TestMimeMessage.messageID);
             _mimeParser.Expect(m => m.ParseHeaderValue(It.IsAny<string>(), "Date")).Returns(TestMimeMessage.messageDate);
             _mimeParser.Expect(m => m.ParseHeaderValue(It.IsAny<string>(), "X-Priority")).Returns(TestMimeMessage.priority);
@@ -37,7 +40,28 @@ namespace Opo.Net.Mail
         }
 
         [Test]
-        public void CanConvertMimeDataToMailMessage()
+        [ExpectedException(typeof(ArgumentException))]
+        public void CannotConvertInt()
+        {
+            IMailMessageConverter mimeMailMessageConverter = new MimeMailMessageConverter(_mimeParser.Object);
+            IMailMessage mailMessage = mimeMailMessageConverter.ConvertFrom(123);
+        }
+        
+        [Test]
+        public void CanConvertMimeEntity()
+        {
+            System.Diagnostics.Debug.WriteLine("==========================================");
+            System.Diagnostics.Debug.WriteLine(Opo.Net.Mime.TestMimeMessage.attachmentPart);
+            System.Diagnostics.Debug.WriteLine("==========================================");
+            System.Diagnostics.Debug.WriteLine(Opo.Net.Mime.TestMimeMessage.attachmentContent);
+            System.Diagnostics.Debug.WriteLine("==========================================");
+            IMimeParser mimeParser = new RegexMimeParser();
+            IMailMessageConverter mimeMailMessageConverter = new MimeMailMessageConverter(mimeParser);
+            IMailMessage mailMessage = mimeMailMessageConverter.ConvertFrom(new MultipartMimeEntity(mimeParser, TestMimeMessage.mimeData));
+        }
+
+        [Test]
+        public void CanConvertMimeData()
         {
             MimeMailMessageConverter mimeMailMessageConverter = new MimeMailMessageConverter(_mimeParser.Object);
             IMailMessage mailMessage = mimeMailMessageConverter.ConvertFrom(TestMimeMessage.mimeData);

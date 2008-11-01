@@ -26,7 +26,7 @@ namespace Opo.Net.Mime
         public static string bcc = toEncoded;
         public static string messageID = "testmessage_MessageID";
         public static string subject = "Message Subject";
-        public static string messageDate = "Sat, 01 Jan 2001 00:00:00 +0100";
+        public static string messageDate = "Mon, 01 Jan 2001 00:00:00 +0100";
         public static string mimeVersion = "1.0";
         public static string contentType = "multipart/mixed";
         public static string boundaryLevel1 = "--=_NextPart001";

@@ -27,13 +27,13 @@ namespace Opo.Net.Mime
         [Test]
         public void CanCreateMultipartMimeEntity()
         {
-            System.Diagnostics.Debug.WriteLine(TestMimeMessage.mimeData);
             IMimeEntity mimeEntity = new MultipartMimeEntity(_mimeParser.Object, "no entities");
             Assert.That(mimeEntity.HasEntities, Is.False);
 
             mimeEntity = new MultipartMimeEntity(_mimeParser.Object, TestMimeMessage.mimeData);
             Assert.That(mimeEntity.Entities.Count, Is.EqualTo(2));
             Assert.That(mimeEntity.GetMimeData(), Is.EqualTo(TestMimeMessage.mimeData));
+            Assert.That(mimeEntity.GetHeaderValue("From"), Is.EqualTo(TestMimeMessage.from));
         }
     }
 }

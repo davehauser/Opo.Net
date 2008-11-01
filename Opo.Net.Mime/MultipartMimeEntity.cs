@@ -13,7 +13,6 @@ namespace Opo.Net.Mime
     public class MultipartMimeEntity : MimeEntityBase, IMimeEntity
     {
         private string _boundary;
-        private string _header;
 
         /// <summary>
         /// Gets the MIME data.
@@ -21,7 +20,8 @@ namespace Opo.Net.Mime
         public override string GetMimeData()
         {
             StringBuilder mimeData = new StringBuilder();
-            mimeData.Append(_header);
+            mimeData.Append(GetHeaders().TrimEnd());
+            mimeData.Append(Content);
             foreach (var entity in Entities)
             {
                 mimeData.AppendLine("--" + _boundary);
@@ -36,20 +36,40 @@ namespace Opo.Net.Mime
         /// </summary>
         public override void SetMimeData(string mimeData)
         {
+            string headersAndContent = String.Empty;
+            Regex r;
+
             _boundary = _mimeParser.ParseBoundary(mimeData);
-            Regex r = new Regex(@"--" + _boundary, RegexOptions.IgnoreCase);
-            string[] parts = r.Split(mimeData);
-            _header = parts[0];
-            SetHeaders(_header);
-            for (int i = 1; i < parts.Length; i++)
+            if (!String.IsNullOrEmpty(_boundary))
             {
-                if (parts[i].Trim().Length > 0)
+                r = new Regex(@"--" + _boundary, RegexOptions.IgnoreCase);
+                string[] entities = r.Split(mimeData);
+                headersAndContent = entities[0];
+
+                // Entities
+                for (int i = 1; i < entities.Length; i++)
                 {
-                    string contentType = _mimeParser.ParseContentType(parts[i]);
-                    IMimeEntity mimeEntity = MimeEntityFactory.GetInstance(_mimeParser, contentType);
-                    mimeEntity.SetMimeData(parts[i]);
-                    Entities.Add(mimeEntity);
+                    if (entities[i].Trim().Length > 0)
+                    {
+                        string contentType = _mimeParser.ParseContentType(entities[i]);
+                        IMimeEntity mimeEntity = MimeEntityFactory.GetInstance(_mimeParser, contentType);
+                        mimeEntity.SetMimeData(entities[i]);
+                        Entities.Add(mimeEntity);
+                    }
                 }
+            }
+
+            // Headers & Content
+            r = new Regex(@"(\r\n\s*){2}");
+            Match m = r.Match(headersAndContent);
+            if (m.Index > 1)
+            {
+                SetHeaders(headersAndContent.Substring(0, m.Index));
+                Content = headersAndContent.Substring(m.Index);
+            }
+            else
+            {
+                SetHeaders(headersAndContent);
             }
         }
         /// <summary>
@@ -69,14 +89,5 @@ namespace Opo.Net.Mime
         /// <param name="mimeData">A string containing the MIME data for the MIME entity</param>
         public MultipartMimeEntity(IMimeParser mimeParser, string mimeData)
             : base(mimeParser, mimeData) { }
-
-        /// <summary>
-        /// Returns the content of the MultipartMimeEntity. This is normally MIME data which contains different parts separated by a boundary string.
-        /// </summary>
-        /// <returns>A String containing the content of the Entity</returns>
-        public string GetContent()
-        {
-            return _mimeParser.ParseContent(this.GetMimeData());
-        }
     }
 }

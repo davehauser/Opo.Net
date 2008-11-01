@@ -25,7 +25,16 @@ namespace Opo.Net.Mime
         /// <returns>A String containing the text of the TextMimeEntity</returns>
         public string GetContent()
         {
-            return Content;
+            string content;
+            if (ContentTransferEncoding == Mime.ContentTransferEncoding.QuotedPrintable)
+            {
+                content = MimeEncoding.QuotedPrintable.Decode(Content.Trim());
+            }
+            else
+            {
+                content = Content.Trim();
+            }
+            return content;
         }
     }
 }
