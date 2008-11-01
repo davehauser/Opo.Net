@@ -15,9 +15,9 @@ namespace Opo.Net.Mime
         [TestFixtureSetUp]
         public void Setup()
         {
-            _mimeParser.Expect(m => m.ParseHeader(TestMimeMessage.mimeData, "Content-Transfer-Encoding")).Returns(TestMimeMessage.attachmentContentTransferEncoding);
-            _mimeParser.Expect(m => m.ParseContent(TestMimeMessage.mimeData)).Returns(TestMimeMessage.content);
-            _mimeParser.Expect(m => m.ParseContentType(TestMimeMessage.mimeData)).Returns(TestMimeMessage.contentType);
+            _mimeParser.Expect(m => m.ParseHeaderValue(TestMimeMessage.mimeData, "Content-Transfer-Encoding")).Returns(TestMimeMessage.attachmentContentTransferEncoding);
+            _mimeParser.Expect(m => m.ParseContent(TestMimeMessage.mimeData)).Returns(TestMimeMessage.attachmentContent);
+            _mimeParser.Expect(m => m.ParseContentType(TestMimeMessage.mimeData)).Returns(TestMimeMessage.attachmentContentType);
         }
 
         [TestFixtureTearDown]
@@ -29,13 +29,13 @@ namespace Opo.Net.Mime
         [Test]
         public void CanCreateAttachmentMimeEntity()
         {
-            AttachmentMimeEntity mimeEntity = new AttachmentMimeEntity(_mimeParser.Object, TestMimeMessage.mimeData);
-            Assert.That(mimeEntity.ContentType, Is.EqualTo(TestMimeMessage.contentType));
-            Assert.That(mimeEntity.ContentTransferEncoding, Is.EqualTo(TestMimeMessage.attachmentContentTransferEncoding));
+            IMimeEntity mimeEntity = new AttachmentMimeEntity(_mimeParser.Object, TestMimeMessage.attachmentPart);
+            Assert.That(mimeEntity.ContentType, Is.EqualTo(TestMimeMessage.attachmentContentType));
 
-            mimeEntity = new AttachmentMimeEntity(_mimeParser.Object, TestMimeMessage.mimeData);
-            Assert.That(mimeEntity.ContentType, Is.EqualTo(TestMimeMessage.contentType));
-            Assert.That(mimeEntity.MimeData, Is.EqualTo(TestMimeMessage.mimeData));
+            mimeEntity = new AttachmentMimeEntity(_mimeParser.Object, TestMimeMessage.attachmentPart);
+            Assert.That(mimeEntity.ContentType, Is.EqualTo(TestMimeMessage.attachmentContentType));
+            Assert.That(mimeEntity.ContentTransferEncoding, Is.EqualTo(TestMimeMessage.attachmentContentTransferEncoding));
+            Assert.That(mimeEntity.GetMimeData(), Is.EqualTo(TestMimeMessage.attachmentPart));
         }
 
         [Test]

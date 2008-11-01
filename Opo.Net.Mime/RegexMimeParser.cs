@@ -14,127 +14,44 @@ namespace Opo.Net.Mime
     public class RegexMimeParser : IMimeParser
     {
         /// <summary>
-        /// Extracts the Message-ID from MIME data
+        /// Parse all headers of the MIME message
         /// </summary>
         /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <returns>A String containing the Message-ID of the MIME message</returns>
-        public string ParseMessageID(string mimeData)
+        /// <returns>A String array containing the headers of the MIME message</returns>
+        public string[] ParseHeaders(string mimeData)
         {
-            return ParseHeader(mimeData, "Message-ID").Replace("<", "").Replace(">", "");
-        }
-
-        /// <summary>
-        /// Extracts the Subject from MIME data
-        /// </summary>
-        /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <returns>A String containing the Subject of the MIME message</returns>
-        public string ParseSubject(string mimeData)
-        {
-            return ParseHeader(mimeData, "Subject");
-        }
-
-        /// <summary>
-        /// Extracts the From address from MIME data
-        /// </summary>
-        /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <returns>A String containing the From address of the MIME message</returns>
-        public string ParseFrom(string mimeData)
-        {
-            return ParseHeader(mimeData, "From");
-        }
-        /// <summary>
-        /// Extracts the To addresses from MIME data
-        /// </summary>
-        /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <returns>A String array containing the To addresses of the MIME message</returns>
-        public string[] ParseTo(string mimeData)
-        {
-            return ParseAddresses(mimeData, "To");
-        }
-        /// <summary>
-        /// Extracts the CC addresses from MIME data
-        /// </summary>
-        /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <returns>A String array containing the CC addresses of the MIME message</returns>
-        public string[] ParseCC(string mimeData)
-        {
-            return ParseAddresses(mimeData, "CC");
-        }
-        /// <summary>
-        /// Extracts the BCC addresses from MIME data
-        /// </summary>
-        /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <returns>A String array containing the BCC addresses of the MIME message</returns>
-        public string[] ParseBCC(string mimeData)
-        {
-            return ParseAddresses(mimeData, "BCC");
-        }
-        /// <summary>
-        /// Extracts addresses from MIME data
-        /// </summary>
-        /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <param name="type">A string containing the type of the addresses (e.g. "From", "CC")</param>
-        /// <returns>A String array containing addresses of the MIME message</returns>
-        private string[] ParseAddresses(string mimeData, string type)
-        {
+            System.Diagnostics.Debug.WriteLine("RegexMimeParser.ParseHeaders()");
+            System.Diagnostics.Debug.WriteLine(mimeData);
             mimeData.Validate("mimeData");
 
-            string[] addresses = new string[] { };
-            Regex r = new Regex(type + @":[\s]+(?<Addresses>(.*(\n[ \t]+.+)*)+)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-            Match m = r.Match(mimeData);
-            if (m.Groups["Addresses"].Length > 0)
+            Regex r = new Regex(@"(\r\n\s*){2,}");
+            string headerPart = r.Split(mimeData)[0];
+            System.Diagnostics.Debug.WriteLine(headerPart);
+
+            r = new Regex(@"(?<Header>.+:\s+[^\r\n]*(\r\n[\t ]+[^\r\n]+)*)");
+            MatchCollection mc = r.Matches(headerPart);
+            IList<string> headers = new List<string>();
+            foreach (Match match in mc)
             {
-                addresses = m.Groups["Addresses"].Value.Split(',');
-                for (int i = 0; i < addresses.Length; i++)
-                {
-                    string revisedAddress = addresses[i].Trim();
-                    if (revisedAddress.StartsWith("=?"))
-                    {
-                        // is quoted-printable?
-                        int p = revisedAddress.ToLower().IndexOf("?q?");
-                        if (p > -1)
-                        {
-                            revisedAddress = Mime.MimeEncoding.QuotedPrintable.Decode(revisedAddress.Substring(p + 3).Replace("?=", ""));
-                        }
-                    }
-                    addresses[i] = revisedAddress;
-                }
+                System.Diagnostics.Debug.WriteLine(match.Groups["Header"].Value);
+                headers.Add(match.Groups["Header"].Value);
             }
-            return addresses;
+            return headers.ToArray();
         }
 
         /// <summary>
-        /// Extracts the Date from MIME data
+        /// Extracts the value of a header from MIME data
         /// </summary>
         /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <returns>A String array containing the date of the MIME message</returns>
-        public string ParseDate(string mimeData)
-        {
-            return ParseHeader(mimeData, "Date");
-        }
-
-        /// <summary>
-        /// Extracts the MIME-Version from MIME data
-        /// </summary>
-        /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <returns>A String array containing the MIME-Version of the MIME message</returns>
-        public string ParseMimeVersion(string mimeData)
+        /// <param name="headerName">A string containing the name of the header to parse</param>
+        /// <returns>A String array containing the value of the specific header of the MIME message</returns>
+        public string ParseHeaderValue(string mimeData, string headerName)
         {
             mimeData.Validate("mimeData");
 
-            Regex r = new Regex(@"MIME-Version:[\s]+(?<Version>[\d\.]*)", RegexOptions.IgnoreCase);
+            Regex r = new Regex(headerName + @":\s+(?<Header>[^\r\n]*(\r\n[\t\x20]+[^\r\n]+)*)");
             Match m = r.Match(mimeData);
-            return m.Groups["Version"].Value;
-        }
-
-        /// <summary>
-        /// Extracts the X-Priority from MIME data
-        /// </summary>
-        /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <returns>A String array the X-Priority of the MIME message</returns>
-        public string ParsePriority(string mimeData)
-        {
-            return ParseHeader(mimeData, "X-Priority");
+            return m.Groups["Header"].Value.Trim();
         }
 
         /// <summary>
@@ -144,7 +61,7 @@ namespace Opo.Net.Mime
         /// <returns>A String array containing the Content-Type of the MIME message</returns>
         public string ParseContentType(string mimeData)
         {
-            string ContentType = ParseHeader(mimeData, "Content-Type");
+            string ContentType = ParseHeaderValue(mimeData, "Content-Type");
             if (ContentType.Contains(Environment.NewLine))
             {
                 ContentType = ContentType.Substring(0, ContentType.IndexOf(Environment.NewLine)).Trim().TrimEnd(';');
@@ -199,19 +116,5 @@ namespace Opo.Net.Mime
             return mimeData.Substring(m.Index + m.Length);
         }
 
-        /// <summary>
-        /// Extracts the value of a header from MIME data
-        /// </summary>
-        /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <param name="headerName">A string containing the name of the header to parse</param>
-        /// <returns>A String array containing the value of the specific header of the MIME message</returns>
-        public string ParseHeader(string mimeData, string headerName)
-        {
-            mimeData.Validate("mimeData");
-
-            Regex r = new Regex(headerName + @":\s+(?<Header>.+\;\s+.+|.+)");
-            Match m = r.Match(mimeData);
-            return m.Groups["Header"].Value.Trim();
-        }
     }
 }

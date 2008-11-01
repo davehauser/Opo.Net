@@ -18,7 +18,6 @@ namespace Opo.Net.Mime
         public void Add(IMimeParser mimeParser, string mimeData)
         {
             this.Add(MimeEntityFactory.GetInstance(mimeParser, mimeData));
-            System.Diagnostics.Debug.WriteLine("MimeEntityCollection.Count: " + this.Count);
         }
     }
 }

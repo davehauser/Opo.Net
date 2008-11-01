@@ -12,11 +12,6 @@ namespace Opo.Net.Mime
     public class TextMimeEntity : MimeEntityBase, IMimeEntity
     {
         /// <summary>
-        /// Gets or sets the MIME data
-        /// </summary>
-        public override string MimeData { get; set; }
-
-        /// <summary>
         /// Initializes a new instance of the TextMimeEntity class
         /// </summary>
         /// <param name="mimeParser">An IMimeParser instance which is used for parsing the MIME data</param>
@@ -30,7 +25,7 @@ namespace Opo.Net.Mime
         /// <returns>A String containing the text of the TextMimeEntity</returns>
         public string GetContent()
         {
-            return _mimeParser.ParseContent(MimeData);
+            return Content;
         }
     }
 }

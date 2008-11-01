@@ -54,11 +54,15 @@ namespace Opo.Net.Mail
             IMailMessage mailMessage = new MailMessage();
             string contentType = _mimeParser.ParseContentType(mimeData);
             IMimeEntity mimeEntity = MimeEntityFactory.GetInstance(_mimeParser, contentType);
-            mimeEntity.MimeData = mimeData;
+            mimeEntity.SetMimeData(mimeData);
+            
+            // set Subject
             mailMessage.Subject = mimeEntity.GetHeaderValue("Subject");
 
             // set addresses
             mailMessage.From = MailAddress.Parse(mimeEntity.GetHeaderValue("From"));
+
+            System.Diagnostics.Debug.WriteLine("*** " + mimeEntity.GetType().ToString());
             string[] to = mimeEntity.GetHeaderValue("To").Split(',');
             foreach (string address in to)
             {
@@ -68,6 +72,7 @@ namespace Opo.Net.Mail
                 }
                 catch (Exception) { }
             }
+            
             string[] cc = mimeEntity.GetHeaderValue("CC").Split(',');
             foreach (string address in cc)
             {
@@ -94,7 +99,7 @@ namespace Opo.Net.Mail
             string[] referenceIDs = mimeEntity.GetHeaderValue("References").Replace("> <", ",").Replace("<", "").Replace(">", "").Split(',');
             mailMessage.ReferenceIDs.AddRange(referenceIDs);
 
-            mailMessage.Size = Encoding.UTF8.GetByteCount(mimeEntity.MimeData);
+            mailMessage.Size = Encoding.UTF8.GetByteCount(mimeEntity.GetMimeData());
 
             if (mimeEntity is TextMimeEntity)
             {
@@ -129,7 +134,7 @@ namespace Opo.Net.Mail
                     string content = (entity as TextMimeEntity).GetContent();
                     string contentType = entity.GetHeaderValue("Content-Type");
                     AlternativeView alternativeView = new AlternativeView(content, contentType);
-                    alternativeView.Charset = _mimeParser.ParseCharset(entity.MimeData);
+                    alternativeView.Charset = _mimeParser.ParseCharset(entity.GetMimeData());
                     alternativeView.TransferEncoding = entity.GetHeaderValue("Content-Transfer-Encoding");
                 }
                 else if (entity is AttachmentMimeEntity)

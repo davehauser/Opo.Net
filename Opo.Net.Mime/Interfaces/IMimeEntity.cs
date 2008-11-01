@@ -15,7 +15,7 @@ namespace Opo.Net.Mime
         /// <summary>
         /// Gets or sets the Transfer-Encoding
         /// </summary>
-        string TransferEncoding { get; set; }
+        string ContentTransferEncoding { get; set; }
         /// <summary>
         /// Gets or sets the Content-Disposition
         /// </summary>
@@ -25,9 +25,9 @@ namespace Opo.Net.Mime
         /// </summary>
         IDictionary<string, string> Headers { get; set; }
         /// <summary>
-        /// Gets or sets the MIME data
+        /// Content of the entity (not decoded)
         /// </summary>
-        string MimeData { get; set; }
+        string Content { get; set; }
         /// <summary>
         /// Collection of child MimeEntities
         /// </summary>
@@ -37,6 +37,14 @@ namespace Opo.Net.Mime
         /// </summary>
         bool HasEntities { get; }
 
+        /// <summary>
+        /// Gets the MIME data.
+        /// </summary>
+        string GetMimeData();
+        /// <summary>
+        /// Sets the MIME data. This changes the properties of the IMimeEntity
+        /// </summary>
+        void SetMimeData(string mimeData);
         /// <summary>
         /// Get the value of a MIME header
         /// </summary>
