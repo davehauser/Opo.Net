@@ -59,7 +59,7 @@
     <Compile Include="MimeEntityFactory.cs" />
     <Compile Include="RegexMimeParser.cs" />
     <Compile Include="TextMimeEntity.cs" />
-    <Compile Include="TransferEncoding.cs" />
+    <Compile Include="ContentTransferEncoding.cs" />
     <Compile Include="MediaTypeNames.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -23,7 +23,7 @@ namespace Opo.Net.Mail
             _name = "Attachment Name";
             _content = "Attachment Content";
             _contentType = Mime.MediaType.Text.Plain;
-            _transferEncoding = Mime.TransferEncoding.QuotedPrintable;
+            _transferEncoding = Mime.ContentTransferEncoding.QuotedPrintable;
         }
 
         [Test]

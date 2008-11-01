@@ -18,11 +18,12 @@ namespace Opo.Net.Mime
             "email3@example.org",
             "\"Address 4\" <email4@example.org>"
         };
-
+        public static string references = "<reference1messageID> <reference2messageID> <reference3messageID>";
         public static string from = emailAdresses[0];
-        public static string to = String.Format("{0},\r\n\t=?iso-8859-1?Q?Umlaut =E4=F6=FC?= <umlaut@example.org>, {2},\r\n {3}", emailAdresses);
-        public static string cc = to;
-        public static string bcc = to;
+        public static string toPlain = String.Format("{0},\r\n\t{1}, {2},\r\n {3}", emailAdresses);
+        public static string toEncoded = String.Format("{0},\r\n\t=?iso-8859-1?Q?Umlaut =E4=F6=FC?= <umlaut@example.org>, {2},\r\n {3}", emailAdresses);
+        public static string cc = toEncoded;
+        public static string bcc = toEncoded;
         public static string messageID = "testmessage_MessageID";
         public static string subject = "Message Subject";
         public static string messageDate = "Sat, 01 Jan 2001 00:00:00 +0100";
@@ -207,6 +208,7 @@ HQPSmc4anN/26QAo7wkKAAACVP2xHbc2ym8bAAB0HdXlDTvIQxB1rDNH67slLG99LnconL3ub996
         public static string htmlPart = BuildHtmlPart();
         public static string attachmentPart = BuildAttachmentPart();
         public static string multipartAlternativePart = BuildMultipartAlternativePart();
+        public static string headers = BuildHeaders();
         public static string content = BuildContent();
 
         private static string BuildMultipartAlternativePart()
@@ -268,21 +270,27 @@ HQPSmc4anN/26QAo7wkKAAACVP2xHbc2ym8bAAB0HdXlDTvIQxB1rDNH67slLG99LnconL3ub996
             content.Append("--" + boundaryLevel1);
             return content.ToString();
         }
+        private static string BuildHeaders()
+        {
+            StringBuilder headers = new StringBuilder();
+            headers.AppendLine("From: " + from);
+            headers.AppendLine("To: " + toEncoded);
+            headers.AppendLine("Cc: " + cc);
+            headers.AppendLine("Bcc: " + bcc);
+            headers.AppendLine("Subject: " + subject);
+            headers.AppendLine("Date: " + messageDate);
+            headers.AppendLine("Message-ID: <" + messageID + ">");
+            headers.AppendLine("MIME-Version: " + mimeVersion + "(produced by opoMail)");
+            headers.AppendLine("Content-Type: " + contentType + ";");
+            headers.AppendLine("\tboundary=\"" + boundaryLevel1 + "\"");
+            headers.AppendLine("X-Priority: " + priority);
+            headers.AppendLine("References: " + references);
+            return headers.ToString();
+        }
         private static string BuildMessage()
         {
             StringBuilder mimeData = new StringBuilder();
-            mimeData.AppendLine("From: " + from);
-            mimeData.AppendLine("To: " + to);
-            mimeData.AppendLine("Cc: " + cc);
-            mimeData.AppendLine("Bcc: " + bcc);
-            mimeData.AppendLine("Subject: " + subject);
-            mimeData.AppendLine("Date: " + messageDate);
-            mimeData.AppendLine("Message-ID: <" + messageID + ">");
-            mimeData.AppendLine("MIME-Version: " + mimeVersion + "(produced by opoMail)");
-            mimeData.AppendLine("Content-Type: " + contentType + ";");
-            mimeData.AppendLine("\tboundary=\"" + boundaryLevel1 + "\"");
-            mimeData.AppendLine("X-Priority: " + priority);
-            mimeData.AppendLine();
+            mimeData.AppendLine(BuildHeaders());
             mimeData.AppendLine();
             mimeData.Append(BuildContent());
 

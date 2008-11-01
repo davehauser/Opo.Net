@@ -87,7 +87,7 @@ namespace Opo.Net.Mail
         /// <param name="filePath">Absolute path to the attachment file</param>
         public Attachment(string filePath)
         {
-            new Attachment(filePath, Mime.TransferEncoding.Base64);
+            new Attachment(filePath, Mime.ContentTransferEncoding.Base64);
         }
         /// <summary>
         /// Initializes a new instance of the Attachment class setting the content as a file

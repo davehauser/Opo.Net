@@ -62,6 +62,7 @@
     <Compile Include="MailAddressCollectionTests.cs" />
     <Compile Include="MailHeaderTests.cs" />
     <Compile Include="MailMessageTests.cs" />
+    <Compile Include="MimeMailMessageConverterTests.cs" />
     <Compile Include="Pop3ClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -69,6 +70,10 @@
     <ProjectReference Include="..\Opo.Net.Mail\Opo.Net.Mail.csproj">
       <Project>{0DC3F586-F011-4604-9BF8-3CFCD14CE5D2}</Project>
       <Name>Opo.Net.Mail</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Opo.Net.Mime.Tests\Opo.Net.Mime.Tests.csproj">
+      <Project>{45164E41-F06A-4F92-A185-95704FAC95CC}</Project>
+      <Name>Opo.Net.Mime.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\Opo.Net.Mime\Opo.Net.Mime.csproj">
       <Project>{013F6B4D-ED77-4A08-9EAF-5AA2517F05F4}</Project>
