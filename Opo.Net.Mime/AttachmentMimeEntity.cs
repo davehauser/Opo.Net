@@ -22,7 +22,7 @@ namespace Opo.Net.Mime
         /// <returns>A Stream containing the decoded attachment</returns>
         public Stream GetContent()
         {
-            System.Diagnostics.Debug.WriteLine(Content.Trim());
+            System.Diagnostics.Debug.WriteLine(Content);
             return MimeEncoding.Base64.Decode(Content.Trim());
         }
     }
