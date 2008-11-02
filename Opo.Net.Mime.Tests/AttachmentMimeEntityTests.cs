@@ -37,16 +37,5 @@ namespace Opo.Net.Mime
             Assert.That(mimeEntity.ContentTransferEncoding, Is.EqualTo(TestMimeMessage.attachmentContentTransferEncoding));
             Assert.That(mimeEntity.GetMimeData(), Is.EqualTo(TestMimeMessage.attachmentPart));
         }
-
-        [Test]
-        public void CanGetContentStream()
-        {
-            AttachmentMimeEntity mimeEntity = new AttachmentMimeEntity(_mimeParser.Object, TestMimeMessage.contentType);
-            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-            using (MemoryStream expected = new MemoryStream(encoding.GetBytes(TestMimeMessage.content)))
-            {
-                Assert.That(mimeEntity.GetContent().Length, Is.EqualTo(expected.Length));
-            }
-        }
     }
 }

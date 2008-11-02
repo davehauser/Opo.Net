@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Opo.ProjectBase;
 
 namespace Opo.Net.Mail
 {
@@ -26,8 +27,8 @@ namespace Opo.Net.Mail
         /// <exception cref="ArgumentNullException">Throws ArgumentNullException if the name is null or empty</exception>
         public MailHeader(string name, string value)
         {
-            if (String.IsNullOrEmpty(name))
-                throw new ArgumentNullException("[name] cannot be empty");
+            name.Validate("name").NotEmpty();
+            
             Name = name;
             Value = value;
         }

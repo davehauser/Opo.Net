@@ -50,14 +50,10 @@ namespace Opo.Net.Mail
         [Test]
         public void CanConvertMimeEntity()
         {
-            System.Diagnostics.Debug.WriteLine("==========================================");
-            System.Diagnostics.Debug.WriteLine(Opo.Net.Mime.TestMimeMessage.attachmentPart);
-            System.Diagnostics.Debug.WriteLine("==========================================");
-            System.Diagnostics.Debug.WriteLine(Opo.Net.Mime.TestMimeMessage.attachmentContent);
-            System.Diagnostics.Debug.WriteLine("==========================================");
             IMimeParser mimeParser = new RegexMimeParser();
             IMailMessageConverter mimeMailMessageConverter = new MimeMailMessageConverter(mimeParser);
             IMailMessage mailMessage = mimeMailMessageConverter.ConvertFrom(new MultipartMimeEntity(mimeParser, TestMimeMessage.mimeData));
+            throw new NotImplementedException("This test is not completely implemented");
         }
 
         [Test]

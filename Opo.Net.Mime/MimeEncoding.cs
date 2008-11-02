@@ -26,7 +26,7 @@ namespace Opo.Net.Mime
                 byte[] byteObj;
                 if (obj is String)
                 {
-                    byteObj = Encoding.ASCII.GetBytes((obj as String).ToCharArray());
+                    byteObj = Encoding.UTF8.GetBytes((obj as String));
                 }
                 else
                 {
@@ -37,6 +37,7 @@ namespace Opo.Net.Mime
                         byteObj = memoryStream.GetBuffer();
                     }
                 }
+                System.Diagnostics.Debug.WriteLine(Convert.ToBase64String(byteObj, Base64FormattingOptions.InsertLineBreaks));
                 return Convert.ToBase64String(byteObj, Base64FormattingOptions.InsertLineBreaks);
             }
 
@@ -59,7 +60,16 @@ namespace Opo.Net.Mime
             /// <returns>Decoded object</returns>
             public static Stream Decode(string s)
             {
-                return new MemoryStream(Convert.FromBase64String(s));
+                MemoryStream stream;
+                try
+                {
+                    stream = new MemoryStream(Convert.FromBase64String(s));
+                }
+                catch (Exception)
+                {
+                    stream = new MemoryStream(Encoding.UTF8.GetBytes(s));
+                }
+                return stream;
             }
         }
 

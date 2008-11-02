@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
+using System.IO;
+using System.Text;
 
 namespace Opo.Net.Mime
 {
@@ -21,7 +23,7 @@ EFGHIJKL MNOPQ RSTUVW XYZ. abcdefgh ijkl mnopq rst uv wxyz. =E4=F6=FC=
  =E9=E8=EA =3D-_ ?!()/&%=E7*+""";
 
             _base64EncodedText = @"QUJDRA0KRUZHSElKS0wgTU5PUFEgUlNUVVZXIFhZWi4gYWJjZGVmZ2ggaWprbCBtbm9wcSByc3Qg
-dXYgd3h5ei4gPz8/ID8/PyA9LV8gPyEoKS8mJT8qKyI=";
+dXYgd3h5ei4gw6TDtsO8IMOpw6jDqiA9LV8gPyEoKS8mJcOnKisi";
         }
 
         [Test]
@@ -44,6 +46,21 @@ dXYgd3h5ei4gPz8/ID8/PyA9LV8gPyEoKS8mJT8qKyI=";
 
         [Test]
         public void CanDecodeBase64()
+        {
+            string expected = _plainText;
+            string actual;
+            using (Stream stream = MimeEncoding.Base64.Decode(_base64EncodedText))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    actual = reader.ReadToEnd();
+                }
+            }
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void CanDecodeBase64Generic()
         {
             Assert.That(MimeEncoding.Base64.Decode<string>(_base64EncodedText), Is.EqualTo(_plainText));
         }

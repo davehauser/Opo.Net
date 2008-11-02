@@ -32,6 +32,8 @@ namespace Opo.Net.Mail
         public void CanCreateContentDisposition()
         {
             ContentDisposition contentDisposition = new ContentDisposition(_dispositionType, _fileName, _creationDate, _size);
+            contentDisposition.ModificationDate = _modificationDate;
+            contentDisposition.ReadDate = _readDate;
 
             Assert.That(contentDisposition.DispositionType, Is.EqualTo(_dispositionType));
             Assert.That(contentDisposition.FileName, Is.EqualTo(_fileName));
