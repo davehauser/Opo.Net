@@ -44,21 +44,20 @@ namespace Opo.Net.Mime
             /// <summary>
             /// Decode base64 encoded content
             /// </summary>
-            /// <typeparam name="T"></typeparam>
             /// <param name="s">Base64 encoded string</param>
-            /// <returns>Decoded object of type T</returns>
-            public static T Decode<T>(string s)
+            /// <returns>Decoded object</returns>
+            public static Stream Decode(string s)
             {
-                object o = new BinaryFormatter().Deserialize(Decode(s));
-                return (T)o;
+                return Decode(s, "utf-8");
             }
 
             /// <summary>
             /// Decode base64 encoded content
             /// </summary>
             /// <param name="s">Base64 encoded string</param>
+            /// <param name="charset"></param>
             /// <returns>Decoded object</returns>
-            public static Stream Decode(string s)
+            public static Stream Decode(string s, string charset)
             {
                 MemoryStream stream;
                 try
@@ -67,7 +66,7 @@ namespace Opo.Net.Mime
                 }
                 catch (Exception)
                 {
-                    stream = new MemoryStream(Encoding.UTF8.GetBytes(s));
+                    stream = new MemoryStream(Encoding.GetEncoding(charset).GetBytes(s));
                 }
                 return stream;
             }
@@ -108,7 +107,7 @@ namespace Opo.Net.Mime
                 string encodedText;
                 Regex r = new Regex(@"[^\r\n\x20-\x7E]|\x3D|([\ \t](?=[\r\n]))");
                 encodedText = r.Replace(s, new MatchEvaluator(HexEncodeMatchEvaluator));
-                encodedText = LimitLineLength(encodedText, 75);
+                encodedText = LimitLineLength(encodedText, 76);
                 return encodedText;
             }
             private static string HexEncodeMatchEvaluator(Match m)
@@ -125,27 +124,35 @@ namespace Opo.Net.Mime
             /// <returns></returns>
             private static string LimitLineLength(string s, int maxLineLength)
             {
-                if (s.Length < maxLineLength)
-                    return s;
-
+                
+                string[] lines = s.Split(new string[] { "\r\n" }, StringSplitOptions.None);
                 StringBuilder formattedText = new StringBuilder();
-                while (true)
+                foreach (string line in lines)
                 {
-                    if (s.Length < maxLineLength)
+                    if (line.Length > maxLineLength)
                     {
-                        formattedText.Append(s);
-                        break;
+                        string currentLine = line;
+                        while (currentLine.Length > maxLineLength)
+                        {
+                            int splitPosition = maxLineLength;
+                            // Do not split encoded characters (e.g. =3D)
+                            if (currentLine.Substring(splitPosition - 3, splitPosition).Contains("="))
+                            {
+                                splitPosition = currentLine.LastIndexOf('=', maxLineLength);
+                            }
+                            formattedText.AppendLine(currentLine.Substring(0, splitPosition) + "=");
+                            currentLine = currentLine.Substring(splitPosition);
+                        }
                     }
                     else
                     {
-                        int splitPosition = s.LastIndexOf('=', maxLineLength);
-                        if (splitPosition < 0 || splitPosition < maxLineLength - 2)
-                            splitPosition = maxLineLength;
-                        formattedText.AppendLine(s.Substring(0, splitPosition) + "=");
-                        s = s.Remove(0, splitPosition);
+                        formattedText.AppendLine(line);
                     }
                 }
-                return formattedText.ToString();
+                // Remove line break at the end of the text
+                string formatted = formattedText.ToString();
+                formatted = formatted.Remove(formatted.Length-2);
+                return formatted;
             }
         }
     }

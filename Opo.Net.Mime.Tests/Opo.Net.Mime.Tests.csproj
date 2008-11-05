@@ -57,7 +57,7 @@
     <Compile Include="AttachmentMimeEntityTests.cs" />
     <Compile Include="MimeEncodingTests.cs" />
     <Compile Include="MimeEntityCollectionTests.cs" />
-    <Compile Include="MimeEntityFactoryTests.cs" />
+    <Compile Include="MimeEntityTests.cs" />
     <Compile Include="MimeHeaderCollectionTests.cs" />
     <Compile Include="MultipartMimeEntityTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

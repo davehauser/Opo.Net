@@ -72,7 +72,7 @@ namespace Opo.Net.Mail
         public IMailMessage ConvertFrom(string mimeData)
         {
             string contentType = MimeParser.ParseContentType(mimeData);
-            IMimeEntity mimeEntity = MimeEntityFactory.GetInstance(MimeParser, contentType);
+            IMimeEntity mimeEntity = MimeEntity.GetInstance(MimeParser, contentType);
             mimeEntity.SetMimeData(mimeData);
             return ConvertFrom(mimeEntity);
         }
@@ -180,13 +180,41 @@ namespace Opo.Net.Mail
         {
             foreach (IMimeEntity entity in mimeEntity.Entities)
             {
+                int textMimeEntityCount = 0;
                 if (entity is TextMimeEntity)
                 {
                     string content = (entity as TextMimeEntity).GetContent();
                     string contentType = entity.GetHeaderValue("Content-Type");
-                    AlternativeView alternativeView = new AlternativeView(content, contentType);
-                    alternativeView.Charset = MimeParser.ParseCharset(entity.GetMimeData());
-                    alternativeView.TransferEncoding = entity.GetHeaderValue("Content-Transfer-Encoding");
+                    string charset = (entity as TextMimeEntity).Charset;
+                    System.Diagnostics.Debug.WriteLine("TextMimeEntity: \r\nContent:\t" + content + "\r\nContent-Type:\t" + contentType + "\r\nCharset:\t" + charset);
+                    if (textMimeEntityCount == 0)
+                    {
+                        if (entity.ContentTransferEncoding == ContentTransferEncoding.QuotedPrintable)
+                        {
+                            mailMessage.Body = MimeEncoding.QuotedPrintable.Decode(content);
+                        }
+                        else
+                        {
+                            mailMessage.Body = content;
+                        }
+                        switch (contentType.Substring(5))
+                        {
+                            case "html":
+                                mailMessage.BodyType = MailMessageBodyType.Html;
+                                break;
+                            default:
+                                mailMessage.BodyType = MailMessageBodyType.PlainText;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        AlternativeView alternativeView = new AlternativeView(content, contentType);
+                        alternativeView.Charset = charset;
+                        alternativeView.TransferEncoding = entity.GetHeaderValue("Content-Transfer-Encoding");
+                        mailMessage.AlternativeViews.Add(alternativeView);
+                    }
+                    textMimeEntityCount++;
                 }
                 else if (entity is AttachmentMimeEntity)
                 {

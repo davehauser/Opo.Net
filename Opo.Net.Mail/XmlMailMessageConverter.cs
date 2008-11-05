@@ -61,7 +61,7 @@ namespace Opo.Net.Mail
                     message.Body = htmlBody.First().Value;
                     if (textBody.Count() > 0)
                     {
-                        message.AlternateViews.Add(AlternativeView.LoadXmlAlternativeView(textBody.First()));
+                        message.AlternativeViews.Add(AlternativeView.LoadXmlAlternativeView(textBody.First()));
                     }
                 }
                 else if (textBody.Count() > 0)
@@ -75,7 +75,7 @@ namespace Opo.Net.Mail
                 }
                 foreach (XElement v in otherViews)
                 {
-                    message.AlternateViews.Add(AlternativeView.LoadXmlAlternativeView(v));
+                    message.AlternativeViews.Add(AlternativeView.LoadXmlAlternativeView(v));
                 }
             }
             return message;
@@ -102,7 +102,7 @@ namespace Opo.Net.Mail
             }
             // alternative views
             XElement xmlAlternativeViews = new XElement("Body");
-            foreach (AlternativeView view in mailMessage.AlternateViews)
+            foreach (AlternativeView view in mailMessage.AlternativeViews)
             {
                 xmlAlternativeViews.Add(new XElement("View",
                     new XAttribute("ContentType", view.ContentType ?? ""),

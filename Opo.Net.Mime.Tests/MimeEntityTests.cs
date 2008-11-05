@@ -6,17 +6,22 @@ using Moq;
 
 namespace Opo.Net.Mime
 {
-    [TestFixture]
+    [TestFixture(Description = "Tests for Opo.Net.Mime.MimeEntity")]
     public class MimeEntityTests
     {
         private Mock<IMimeParser> _mimeParser = new Mock<IMimeParser>();
-        
+
         [TestFixtureSetUp]
         public void Setup()
         {
-            _mimeParser.Expect(m => m.ParseBoundary(It.IsAny<string>())).Returns(TestMimeMessage.boundaryLevel1);
-            _mimeParser.Expect(m => m.ParseContentType(It.IsAny<string>())).Returns(TestMimeMessage.contentType);
-            _mimeParser.Expect(m => m.ParseContent(It.IsAny<string>())).Returns(TestMimeMessage.content);
+            _mimeParser.Expect(m => m.ParseContentType(It.IsAny<string>())).Returns("text/plain");
+            _mimeParser.Expect(m => m.ParseBoundary(TestMimeMessage.mimeData)).Returns(TestMimeMessage.boundaryLevel1);
+            _mimeParser.Expect(m => m.ParseContentType(TestMimeMessage.mimeData)).Returns("multipart/mixed");
+            _mimeParser.Expect(m => m.ParseBoundary(It.Is<string>(s => s != TestMimeMessage.mimeData))).Returns(TestMimeMessage.boundaryLevel2);
+            _mimeParser.Expect(m => m.ParseContentType(TestMimeMessage.multipartAlternativePart)).Returns("multipart/alternative");
+            _mimeParser.Expect(m => m.ParseContentType(TestMimeMessage.textPart)).Returns("text/plain");
+            _mimeParser.Expect(m => m.ParseContentType(TestMimeMessage.htmlPart)).Returns("text/html");
+            _mimeParser.Expect(m => m.ParseContentType(TestMimeMessage.attachmentPart)).Returns("image/gif");
         }
 
         [TestFixtureTearDown]
@@ -26,15 +31,13 @@ namespace Opo.Net.Mime
         }
 
         [Test]
-        public void CanCreateMimeEntity()
+        public void CanGetInstanceByMimeData()
         {
-            MimeEntityBase mimeEntityBase = new MimeEntityBase(_mimeParser.Object, TestMimeMessage.mimeData);
-            Assert.That(mimeEntityBase.MimeData, Is.EqualTo(TestMimeMessage.mimeData));
-            Assert.That(mimeEntityBase.ContentType, Is.EqualTo(TestMimeMessage.contentType));
-
-            mimeEntityBase = new MimeEntityBase(_mimeParser.Object, TestMimeMessage.mimeData, TestMimeMessage.contentType);
-            Assert.That(mimeEntityBase.ContentType, Is.EqualTo(TestMimeMessage.contentType));
-            Assert.That(mimeEntityBase.MimeData, Is.EqualTo(TestMimeMessage.mimeData));
+            Assert.That(MimeEntity.GetInstance(_mimeParser.Object, TestMimeMessage.mimeData), Is.TypeOf(typeof(MultipartMimeEntity)));
+            Assert.That(MimeEntity.GetInstance(_mimeParser.Object, TestMimeMessage.multipartAlternativePart), Is.TypeOf(typeof(MultipartMimeEntity)));
+            Assert.That(MimeEntity.GetInstance(_mimeParser.Object, TestMimeMessage.textPart), Is.TypeOf(typeof(TextMimeEntity)));
+            Assert.That(MimeEntity.GetInstance(_mimeParser.Object, TestMimeMessage.htmlPart), Is.TypeOf(typeof(TextMimeEntity)));
+            Assert.That(MimeEntity.GetInstance(_mimeParser.Object, TestMimeMessage.attachmentPart), Is.TypeOf(typeof(AttachmentMimeEntity)));
         }
     }
 }
