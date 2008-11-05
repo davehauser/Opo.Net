@@ -56,7 +56,7 @@
     <Compile Include="MultipartMimeEntity.cs" />
     <Compile Include="MimeEncoding.cs" />
     <Compile Include="MimeEntityBase.cs" />
-    <Compile Include="MimeEntityFactory.cs" />
+    <Compile Include="MimeEntity.cs" />
     <Compile Include="RegexMimeParser.cs" />
     <Compile Include="TextMimeEntity.cs" />
     <Compile Include="ContentTransferEncoding.cs" />

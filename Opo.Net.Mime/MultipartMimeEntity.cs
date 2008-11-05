@@ -52,7 +52,7 @@ namespace Opo.Net.Mime
                     if (entities[i].Trim().Length > 0)
                     {
                         string contentType = _mimeParser.ParseContentType(entities[i]);
-                        IMimeEntity mimeEntity = MimeEntityFactory.GetInstance(_mimeParser, contentType);
+                        IMimeEntity mimeEntity = MimeEntity.GetInstance(_mimeParser, contentType);
                         mimeEntity.SetMimeData(entities[i]);
                         Entities.Add(mimeEntity);
                     }

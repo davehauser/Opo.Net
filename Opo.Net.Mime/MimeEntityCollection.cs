@@ -17,7 +17,7 @@ namespace Opo.Net.Mime
         /// <param name="mimeData">A string containing the MIME data</param>
         public void Add(IMimeParser mimeParser, string mimeData)
         {
-            this.Add(MimeEntityFactory.GetInstance(mimeParser, mimeData));
+            this.Add(MimeEntity.GetInstance(mimeParser, mimeData));
         }
     }
 }

@@ -76,6 +76,6 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Gets or sets a collection that contains alternative views for the message body
         /// </summary>
-        AlternativeViewCollection AlternateViews { get; set; }
+        AlternativeViewCollection AlternativeViews { get; set; }
     }
 }

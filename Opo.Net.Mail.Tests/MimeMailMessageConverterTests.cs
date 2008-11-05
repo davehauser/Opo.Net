@@ -53,7 +53,11 @@ namespace Opo.Net.Mail
             IMimeParser mimeParser = new RegexMimeParser();
             IMailMessageConverter mimeMailMessageConverter = new MimeMailMessageConverter(mimeParser);
             IMailMessage mailMessage = mimeMailMessageConverter.ConvertFrom(new MultipartMimeEntity(mimeParser, TestMimeMessage.mimeData));
-            throw new NotImplementedException("This test is not completely implemented");
+            Assert.That(mailMessage.Subject, Is.EqualTo(TestMimeMessage.subject));
+            Assert.That(mailMessage.AlternativeViews.Count, Is.EqualTo(1));
+            Assert.That(mailMessage.Body, Is.EqualTo(TestMimeMessage.textBody));
+            Assert.That(mailMessage.BodyType, Is.EqualTo(MailMessageBodyType.PlainText));
+
         }
 
         [Test]

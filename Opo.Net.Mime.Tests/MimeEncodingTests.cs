@@ -29,13 +29,13 @@ dXYgd3h5ei4gw6TDtsO8IMOpw6jDqiA9LV8gPyEoKS8mJcOnKisi";
         [Test]
         public void CanEncodeQuotedPrintable()
         {
-            Assert.That(MimeEncoding.QuotedPrintable.Encode(_plainText), Is.EqualTo(_quotedPrintableEncodedText));
+            Assert.That(MimeEncoding.QuotedPrintable.Encode(TestMimeMessage.htmlBodyDecoded), Is.EqualTo(TestMimeMessage.htmlBody));
         }
 
         [Test]
         public void CanDecodeQuotedPrintable()
         {
-            Assert.That(MimeEncoding.QuotedPrintable.Decode(_quotedPrintableEncodedText), Is.EqualTo(_plainText));
+            Assert.That(MimeEncoding.QuotedPrintable.Decode(TestMimeMessage.htmlBody), Is.EqualTo(TestMimeMessage.htmlBodyDecoded));
         }
 
         [Test]
@@ -57,12 +57,6 @@ dXYgd3h5ei4gw6TDtsO8IMOpw6jDqiA9LV8gPyEoKS8mJcOnKisi";
                 }
             }
             Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
-        public void CanDecodeBase64Generic()
-        {
-            Assert.That(MimeEncoding.Base64.Decode<string>(_base64EncodedText), Is.EqualTo(_plainText));
         }
     }
 }

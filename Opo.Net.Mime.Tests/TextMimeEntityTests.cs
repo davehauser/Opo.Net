@@ -14,8 +14,9 @@ namespace Opo.Net.Mime
         [TestFixtureSetUp]
         public void Setup()
         {
-            _mimeParser.Expect(m => m.ParseContent(TestMimeMessage.mimeData)).Returns(TestMimeMessage.content);
-            _mimeParser.Expect(m => m.ParseContentType(TestMimeMessage.mimeData)).Returns(TestMimeMessage.contentType);
+            _mimeParser.Expect(m => m.ParseContent(TestMimeMessage.textPart)).Returns(TestMimeMessage.content);
+            _mimeParser.Expect(m => m.ParseContentType(TestMimeMessage.textPart)).Returns(TestMimeMessage.contentType);
+            _mimeParser.Expect(m => m.ParseCharset(TestMimeMessage.textPart)).Returns(TestMimeMessage.textBodyCharset);
         }
 
         [TestFixtureTearDown]
@@ -31,6 +32,7 @@ namespace Opo.Net.Mime
             Assert.That(mimeEntity.GetMimeData(), Is.EqualTo(TestMimeMessage.textPart));
             Assert.That(mimeEntity.ContentType, Is.EqualTo(TestMimeMessage.textBodyContentType));
             Assert.That(mimeEntity.ContentTransferEncoding, Is.EqualTo(TestMimeMessage.textBodyContentTransferEncoding));
+            Assert.That(mimeEntity.Charset, Is.EqualTo(TestMimeMessage.textBodyCharset));
         }
 
         [Test]

@@ -79,7 +79,7 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Gets or sets a collection that contains alternative views for the message body
         /// </summary>
-        public AlternativeViewCollection AlternateViews { get; set; }
+        public AlternativeViewCollection AlternativeViews { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the MailMessage class
@@ -92,7 +92,7 @@ namespace Opo.Net.Mail
             Bcc = new MailAddressCollection();
             Headers = new MailHeaderCollection();
             Attachments = new AttachmentCollection();
-            AlternateViews = new AlternativeViewCollection();
+            AlternativeViews = new AlternativeViewCollection();
             BodyType = MailMessageBodyType.Html;
         }
 

@@ -38,13 +38,22 @@ Content-Transfer-Encoding=3Dquoted-printable";
         public static string textBodyContentTransferEncoding = "quoted-printable";
         public static string htmlBody = @"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">
 <html><head>
-<meta http-equiv=3DContent-Type content=3D""text/html; =
-charset=3Diso-8859-1"">
+<meta http-equiv=3DContent-Type content=3D""text/html; charset=3Diso-8859-1"">
 </head>
 <body>
 <h1>Hello Reader</h1>
-<p>This is the text body of the mail message. =
+<p>This is the text body of the mail message.
 Content-Transfer-Encoding=3Dquoted-printable</p>
+</body>
+</html>";
+        public static string htmlBodyDecoded = @"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">
+<html><head>
+<meta http-equiv=Content-Type content=""text/html; charset=iso-8859-1"">
+</head>
+<body>
+<h1>Hello Reader</h1>
+<p>This is the text body of the mail message.
+Content-Transfer-Encoding=quoted-printable</p>
 </body>
 </html>";
         public static string htmlBodyContentType = "text/html";
