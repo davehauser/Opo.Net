@@ -33,6 +33,7 @@ namespace Opo.Net.Mime
         public static string priority = "3";
         public static string textBody = @"This is the text body of the mail message. =
 Content-Transfer-Encoding=3Dquoted-printable";
+        public static string textBodyDecoded = @"This is the text body of the mail message. Content-Transfer-Encoding=quoted-printable";
         public static string textBodyContentType = "text/plain";
         public static string textBodyCharset = "iso-8859-1";
         public static string textBodyContentTransferEncoding = "quoted-printable";

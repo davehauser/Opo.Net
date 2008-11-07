@@ -68,6 +68,13 @@ namespace Opo.Net.Mime
         /// Gets a value indicating whether there are any items in the Entities collection
         /// </summary>
         public bool HasEntities { get { return false; } }
+        /// <summary>
+        /// Gets the IMimeParser that is used to parse the MIME data
+        /// </summary>
+        public IMimeParser MimeParser
+        {
+            get { return _mimeParser; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the MimeEntityBase class with empty MIME data
@@ -99,6 +106,7 @@ namespace Opo.Net.Mime
         {
             StringBuilder mimeData = new StringBuilder();
             mimeData.AppendLine(GetHeaders());
+            mimeData.AppendLine();
             mimeData.Append(Content);
             return mimeData.ToString();
         }
@@ -111,11 +119,11 @@ namespace Opo.Net.Mime
             Match m = r.Match(mimeData);
             if (m.Index <= 1)
             {
-                Content = mimeData;
+                Content = mimeData.Trim();
             }
             else
             {
-                Content = mimeData.Substring(m.Index + m.Length);
+                Content = mimeData.Substring(m.Index + m.Length).Trim();
 
                 string headers = mimeData.Substring(0, m.Index);
                 this.SetHeaders(headers);
@@ -157,7 +165,7 @@ namespace Opo.Net.Mime
             {
                 headers.AppendLine(String.Format("{0}: {1}", header.Key, header.Value));
             }
-            return headers.ToString();
+            return headers.ToString().TrimEnd();
         }
     }
 }

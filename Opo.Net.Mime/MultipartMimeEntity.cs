@@ -15,20 +15,47 @@ namespace Opo.Net.Mime
         private string _boundary;
 
         /// <summary>
+        /// Gets the boundary string for the multipart entity
+        /// </summary>
+        public string Boundary
+        {
+            get 
+            {
+                if (String.IsNullOrEmpty(_boundary))
+                    _boundary = "---=_NextPart_" + new Guid().ToString();
+                return _boundary; 
+            }
+            private set
+            {
+                _boundary = value; 
+            }
+        }
+
+        /// <summary>
         /// Gets the MIME data.
         /// </summary>
         public override string GetMimeData()
         {
             StringBuilder mimeData = new StringBuilder();
-            mimeData.Append(GetHeaders().TrimEnd());
-            mimeData.Append(Content);
+            string headers = GetHeaders();
+            if (!String.IsNullOrEmpty(headers))
+            {
+                mimeData.AppendLine(headers);
+                mimeData.AppendLine();
+            }
+            if (!String.IsNullOrEmpty(Content))
+            {
+                mimeData.AppendLine(Content);
+                mimeData.AppendLine();
+            }
             foreach (var entity in Entities)
             {
-                mimeData.AppendLine("--" + _boundary);
-                mimeData.Append(entity.GetMimeData());
+                mimeData.AppendLine("--" + Boundary);
+                mimeData.AppendLine(entity.GetMimeData());
+                mimeData.AppendLine();
             }
             if (HasEntities)
-                mimeData.Append("--" + _boundary);
+                mimeData.Append("--" + Boundary);
             return mimeData.ToString();
         }
         /// <summary>
@@ -36,24 +63,24 @@ namespace Opo.Net.Mime
         /// </summary>
         public override void SetMimeData(string mimeData)
         {
+            mimeData.Validate("mimeData").NotEmpty();
+
             string headersAndContent = String.Empty;
             Regex r;
-
-            _boundary = _mimeParser.ParseBoundary(mimeData);
-            if (!String.IsNullOrEmpty(_boundary))
+            Boundary = _mimeParser.ParseBoundary(mimeData);
+            if (!String.IsNullOrEmpty(Boundary))
             {
-                r = new Regex(@"--" + _boundary, RegexOptions.IgnoreCase);
+                r = new Regex(@"--" + Boundary, RegexOptions.IgnoreCase);
                 string[] entities = r.Split(mimeData);
-                headersAndContent = entities[0];
+                headersAndContent = entities[0].Trim();
 
                 // Entities
+                Entities.Clear();
                 for (int i = 1; i < entities.Length; i++)
                 {
                     if (entities[i].Trim().Length > 0)
                     {
-                        string contentType = _mimeParser.ParseContentType(entities[i]);
-                        IMimeEntity mimeEntity = MimeEntity.GetInstance(_mimeParser, contentType);
-                        mimeEntity.SetMimeData(entities[i]);
+                        IMimeEntity mimeEntity = MimeEntity.GetInstance(_mimeParser, entities[i].Trim());
                         Entities.Add(mimeEntity);
                     }
                 }
@@ -65,7 +92,7 @@ namespace Opo.Net.Mime
             if (m.Index > 1)
             {
                 SetHeaders(headersAndContent.Substring(0, m.Index));
-                Content = headersAndContent.Substring(m.Index);
+                Content = headersAndContent.Substring(m.Index + m.Length);
             }
             else
             {

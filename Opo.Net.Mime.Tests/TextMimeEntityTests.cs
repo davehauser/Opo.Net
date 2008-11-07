@@ -29,7 +29,7 @@ namespace Opo.Net.Mime
         public void CanCreateTextMimeEntity()
         {
             TextMimeEntity mimeEntity = new TextMimeEntity(_mimeParser.Object, TestMimeMessage.textPart);
-            Assert.That(mimeEntity.GetMimeData(), Is.EqualTo(TestMimeMessage.textPart));
+            Assert.That(mimeEntity.GetMimeData(), Is.EqualTo(TestMimeMessage.textPart.Trim()));
             Assert.That(mimeEntity.ContentType, Is.EqualTo(TestMimeMessage.textBodyContentType));
             Assert.That(mimeEntity.ContentTransferEncoding, Is.EqualTo(TestMimeMessage.textBodyContentTransferEncoding));
             Assert.That(mimeEntity.Charset, Is.EqualTo(TestMimeMessage.textBodyCharset));

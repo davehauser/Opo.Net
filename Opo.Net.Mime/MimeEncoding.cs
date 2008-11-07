@@ -37,7 +37,6 @@ namespace Opo.Net.Mime
                         byteObj = memoryStream.GetBuffer();
                     }
                 }
-                System.Diagnostics.Debug.WriteLine(Convert.ToBase64String(byteObj, Base64FormattingOptions.InsertLineBreaks));
                 return Convert.ToBase64String(byteObj, Base64FormattingOptions.InsertLineBreaks);
             }
 

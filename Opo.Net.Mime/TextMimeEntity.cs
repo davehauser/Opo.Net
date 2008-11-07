@@ -25,6 +25,9 @@ namespace Opo.Net.Mime
             : base(mimeParser, mimeData)
         {
             Charset = _mimeParser.ParseCharset(mimeData);
+            System.Diagnostics.Debug.WriteLine(ContentType);
+            if (ContentType.Contains("\r\n"))
+                ContentType = ContentType.Substring(0, ContentType.IndexOf('\r')).TrimEnd(';');
         }
 
         /// <summary>
