@@ -65,7 +65,6 @@
     <Compile Include="Interfaces\IRecieveMailClient.cs" />
     <Compile Include="Interfaces\ISendMailClient.cs" />
     <Compile Include="MailAddress.cs" />
-    <Compile Include="Interfaces\IPop3Client.cs" />
     <Compile Include="MailAddressCollection.cs" />
     <Compile Include="MailHeader.cs" />
     <Compile Include="MailHeaderCollection.cs" />

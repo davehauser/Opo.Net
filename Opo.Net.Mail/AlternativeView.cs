@@ -15,10 +15,12 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Gets or sets the Content-Type (e.g. "text/html")
         /// </summary>
+        /// <value></value>
         public string ContentType { get; set; }
         /// <summary>
         /// Gets or sets the charset (e.g. "iso-8859-1")
         /// </summary>
+        /// <value></value>
         public string Charset { get; set; }
         /// <summary>
         /// Gets or sets the Content-Transfer-Encoding (e.g. "quoted-printable")
