@@ -35,7 +35,7 @@ namespace Opo.Net.Mime
             mimeEntity = new AttachmentMimeEntity(_mimeParser.Object, TestMimeMessage.attachmentPart);
             Assert.That(mimeEntity.ContentType, Is.EqualTo(TestMimeMessage.attachmentContentType));
             Assert.That(mimeEntity.ContentTransferEncoding, Is.EqualTo(TestMimeMessage.attachmentContentTransferEncoding));
-            Assert.That(mimeEntity.GetMimeData(), Is.EqualTo(TestMimeMessage.attachmentPart));
+            Assert.That(mimeEntity.GetMimeData(), Is.EqualTo(TestMimeMessage.attachmentPart.Trim()));
         }
     }
 }

@@ -7,6 +7,7 @@ using Opo.Net.Mime;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.IO;
+using Debug = System.Diagnostics.Debug;
 
 namespace Opo.Net.Mail
 {
@@ -46,6 +47,11 @@ namespace Opo.Net.Mail
             MimeParser = mimeParser;
         }
 
+        /// <summary>
+        /// Converts MIME data to MailMessage
+        /// </summary>
+        /// <param name="data">An object containing the MIME data (currently String or <see cref="IMimeEntity">IMimeEntity</see>)</param>
+        /// <returns>A new instance of the <see cref="MailMessage">MailMessage</see> class</returns>
         public IMailMessage ConvertFrom(object data)
         {
             IMailMessage mailMessage;
@@ -71,9 +77,7 @@ namespace Opo.Net.Mail
         /// <returns>A new instance of the MailMessage class</returns>
         public IMailMessage ConvertFrom(string mimeData)
         {
-            string contentType = MimeParser.ParseContentType(mimeData);
-            IMimeEntity mimeEntity = MimeEntity.GetInstance(MimeParser, contentType);
-            mimeEntity.SetMimeData(mimeData);
+            IMimeEntity mimeEntity = MimeEntity.GetInstance(MimeParser, mimeData);
             return ConvertFrom(mimeEntity);
         }
         /// <summary>
@@ -86,6 +90,8 @@ namespace Opo.Net.Mail
         {
             mimeEntity.Validate("mimeData");
 
+            if (_mimeParser == null)
+                _mimeParser = mimeEntity.MimeParser;
             IMailMessage mailMessage = new MailMessage();
 
             // set Subject
@@ -146,17 +152,26 @@ namespace Opo.Net.Mail
                 priority = 3;
             mailMessage.Priority = (MailPriority)priority;
 
-            // set Reference-IDs
+            // set MessageID and Reference-IDs
+            mailMessage.MessageID = mimeEntity.GetHeaderValue("Message-ID").Replace("<", "").Replace(">","");
             string[] referenceIDs = mimeEntity.GetHeaderValue("References").Replace("> <", ",").Replace("<", "").Replace(">", "").Split(',');
             mailMessage.ReferenceIDs.AddRange(referenceIDs);
 
+            // set Size
             mailMessage.Size = Encoding.UTF8.GetByteCount(mimeEntity.GetMimeData());
+
+            // set Headers
+            foreach (var header in mimeEntity.Headers)
+            {
+                mailMessage.Headers.Add(header.Key, header.Value);
+            }
 
             if (mimeEntity is TextMimeEntity)
             {
                 // set mail body
+                Debug.WriteLine("Is TextMimeEntity --> Set Body");
                 mailMessage.Body = (mimeEntity as TextMimeEntity).GetContent();
-                string textType = mimeEntity.GetHeaderValue("Content-Type");
+                string textType = mimeEntity.ContentType;
                 if (textType.Contains('/'))
                     textType = textType.Substring(textType.IndexOf('/'));
                 if (textType.Contains(';'))
@@ -165,29 +180,41 @@ namespace Opo.Net.Mail
                 {
                     mailMessage.BodyType = (MailMessageBodyType)Enum.Parse(typeof(MailMessageBodyType), textType, true);
                 }
-                catch (Exception) { }
-            }
-            else
-            {
-                if (mimeEntity.HasEntities)
+                catch (Exception)
                 {
-                    ProcessEntities(ref mailMessage, mimeEntity);
+                    mailMessage.BodyType = MailMessageBodyType.PlainText;
                 }
+            }
+            else if (mimeEntity is AttachmentMimeEntity)
+            {
+                Debug.WriteLine("Is AttachmentMimeEntity --> Create Attachment");
+                // TODO: create attachment
+            }
+
+            if (mimeEntity.HasEntities)
+            {
+                Debug.WriteLine("HasEntities==true --> Process");
+                ProcessEntities(ref mailMessage, mimeEntity);
             }
             return mailMessage;
         }
+        /// <summary>
+        /// Converts the Entities collection of a IMimeEntity to Body, AlternativeViews and Attachments and adds them to the MailMessage
+        /// </summary>
+        /// <param name="mailMessage">IMailMessage instance to add Body, AlternativeViews and Attachments</param>
+        /// <param name="mimeEntity">IMimeEntity which's Entities collection is processed</param>
         private void ProcessEntities(ref IMailMessage mailMessage, IMimeEntity mimeEntity)
         {
+            int textMimeEntityCounter = 0;
             foreach (IMimeEntity entity in mimeEntity.Entities)
             {
-                int textMimeEntityCount = 0;
                 if (entity is TextMimeEntity)
                 {
+                    textMimeEntityCounter++;
                     string content = (entity as TextMimeEntity).GetContent();
                     string contentType = entity.GetHeaderValue("Content-Type");
                     string charset = (entity as TextMimeEntity).Charset;
-                    System.Diagnostics.Debug.WriteLine("TextMimeEntity: \r\nContent:\t" + content + "\r\nContent-Type:\t" + contentType + "\r\nCharset:\t" + charset);
-                    if (textMimeEntityCount == 0)
+                    if (textMimeEntityCounter == 1)
                     {
                         if (entity.ContentTransferEncoding == ContentTransferEncoding.QuotedPrintable)
                         {
@@ -214,7 +241,6 @@ namespace Opo.Net.Mail
                         alternativeView.TransferEncoding = entity.GetHeaderValue("Content-Transfer-Encoding");
                         mailMessage.AlternativeViews.Add(alternativeView);
                     }
-                    textMimeEntityCount++;
                 }
                 else if (entity is AttachmentMimeEntity)
                 {
@@ -234,7 +260,8 @@ namespace Opo.Net.Mail
 
                     IAttachment attachment = new Attachment(name, (entity as AttachmentMimeEntity).GetContent(), contentTransferEncoding);
                 }
-                else if (entity is MultipartMimeEntity)
+
+                if (entity.HasEntities)
                 {
                     ProcessEntities(ref mailMessage, entity);
                 }

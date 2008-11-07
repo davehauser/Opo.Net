@@ -36,6 +36,10 @@ namespace Opo.Net.Mime
         /// Gets a value indicating whether there are any items in the Entities collection
         /// </summary>
         bool HasEntities { get; }
+        /// <summary>
+        /// Gets the IMimeParser that is used to parse the MIME data
+        /// </summary>
+        IMimeParser MimeParser { get; }
 
         /// <summary>
         /// Gets the MIME data.
