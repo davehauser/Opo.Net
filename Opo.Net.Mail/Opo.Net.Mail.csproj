@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Opo.Net.Mail.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Opo.ProjectBase, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">

@@ -11,7 +11,7 @@ namespace Opo.Net.TestProject
     {
         static void Main(string[] args)
         {
-            Pop3Client pop3 = new Pop3Client("pop.opo.li", 110, "test@opo.li", "test");
+            Pop3Client pop3 = new Pop3Client("pop.example.org", 110, "accountName", "password");
             pop3.Connect();
             pop3.Login();
             string mimeData = pop3.GetMessage(1);
