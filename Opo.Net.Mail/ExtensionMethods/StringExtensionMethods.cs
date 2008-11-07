@@ -63,6 +63,5 @@ namespace Opo.Net.Mail
         {
             return !String.IsNullOrEmpty(s);
         }
-
     }
 }

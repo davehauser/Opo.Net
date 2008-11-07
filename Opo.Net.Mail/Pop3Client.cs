@@ -764,24 +764,64 @@ namespace Opo.Net.Mail
         #endregion
 
         #region Additional Types
+        /// <summary>
+        /// Information about a mailbox
+        /// </summary>
         public class MailboxInfo
         {
+            /// <summary>
+            /// Gets or sets the number of messages.
+            /// </summary>
+            /// <value>The number of messages.</value>
             public int NumberOfMessages { get; internal set; }
+            /// <summary>
+            /// Gets or sets the size of the mailbox.
+            /// </summary>
+            /// <value>The size of the mailbox.</value>
             public int MailboxSize { get; internal set; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="MailboxInfo"/> class.
+            /// </summary>
+            /// <param name="numberOfMessages">The number of messages.</param>
+            /// <param name="mailboxSize">Size of the mailbox.</param>
             public MailboxInfo(int numberOfMessages, int mailboxSize)
             {
                 this.NumberOfMessages = numberOfMessages;
                 this.MailboxSize = mailboxSize;
             }
         }
+        /// <summary>
+        /// Information about a mail message
+        /// </summary>
         public class MessageInfo
         {
+            /// <summary>
+            /// Gets or sets the message number.
+            /// </summary>
+            /// <value>The message number.</value>
             public int MessageNumber { get; internal set; }
+            /// <summary>
+            /// Gets or sets the size.
+            /// </summary>
+            /// <value>The size.</value>
             public int Size { get; internal set; }
+            /// <summary>
+            /// Gets or sets the unique ID.
+            /// </summary>
+            /// <value>The unique ID.</value>
             public string UniqueID { get; internal set; }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="MessageInfo"/> class.
+            /// </summary>
             public MessageInfo() { }
+            /// <summary>
+            /// Initializes a new instance of the <see cref="MessageInfo"/> class.
+            /// </summary>
+            /// <param name="messageNumber">The message number.</param>
+            /// <param name="size">The size of the message.</param>
+            /// <param name="uniqueID">The unique ID of the message.</param>
             public MessageInfo(int messageNumber, int size, string uniqueID)
             {
                 this.MessageNumber = messageNumber;
@@ -789,6 +829,9 @@ namespace Opo.Net.Mail
                 this.UniqueID = uniqueID;
             }
         }
+        /// <summary>
+        /// Collection of message information
+        /// </summary>
         public class MessageInfoCollection : List<MessageInfo>
         {
             /// <summary>
