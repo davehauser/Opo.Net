@@ -33,9 +33,9 @@ namespace Opo.Net.Mail
         /// <param name="content">A String representing the content of the view</param>
         /// <param name="contentType">The Content-Type (e.g. "text/html")</param>
         public AlternativeView(string content, string contentType)
+            : this(content, contentType, "", "")
         {
-            Content = content;
-            ContentType = contentType;
+
         }
         /// <summary>
         /// Initializes a new instance of the AlernativeView class

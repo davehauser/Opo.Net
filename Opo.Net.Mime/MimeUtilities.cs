@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace Opo.Net.Mime
 {
@@ -9,7 +10,6 @@ namespace Opo.Net.Mime
     {
         public static DateTime ParseRfc2822Date(string date)
         {
-            date = date.ToLower();
             date = date.Replace("bst", "+0100");
             date = date.Replace("gmt", "-0000");
             date = date.Replace("edt", "-0400");
@@ -28,8 +28,9 @@ namespace Opo.Net.Mime
             if (m.Success)
             {
                 string dateTime = m.Groups["DateTime"].Value.TrimStart('0');
-                parsedDateTime = DateTime.ParseExact(dateTime, new string[] { "d MMM yyyy hh:mm", "d MMM yyyy hh:mm:ss" }, CultureInfo.InvariantCulture, DateTimeStyles.None);
-                
+                //parsedDateTime = DateTime.ParseExact("2 Apr 2008 12:37:04", new string[] { "d MMM yyyy HH:mm", "d MMM yyyy HH:mm:ss" }, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+                parsedDateTime = DateTime.ParseExact(dateTime, new string[] { "d MMM yyyy HH:mm", "d MMM yyyy HH:mm:ss" }, CultureInfo.InvariantCulture, DateTimeStyles.None);
+
                 string timeZone = m.Groups["TimeZone"].Value;
                 if (timeZone.Length == 5)
                 {
@@ -40,6 +41,14 @@ namespace Opo.Net.Mime
                 }
             }
             return parsedDateTime;
+        }
+        public static string ToRfc2822Date(this DateTime date)
+        {
+            //TODO: Implement conversion to RFC2822 Date (offset)
+            TimeSpan offset = TimeZoneInfo.Local.BaseUtcOffset;
+            Debug.WriteLine(offset.ToString());
+            //DateTimeOffset dateTimeOffset = new DateTimeOffset(date, offset);
+            return date.ToString("ddd, dd MMM yyyy HH:mm:ss +") + offset.Hours.ToString().PadRight('0') + "00";
         }
     }
 }

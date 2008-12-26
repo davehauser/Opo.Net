@@ -12,38 +12,151 @@ namespace Opo.Net.Mail
     /// </summary>
     public class MailMessage : IMailMessage
     {
+        private MailHeaderCollection _headers;
+
         /// <summary>
         /// Gets or sets the MessageID
         /// </summary>
-        public string MessageID { get; set; }
+        public string MessageID
+        {
+            get
+            {
+                return Headers.GetValue("Message-ID");
+            }
+            set
+            {
+                Headers.Add("Message-ID", value);
+            }
+        }
         /// <summary>
         /// Gets or sets the ReferenceIDs. ReferenceIDs contains MessageIDs of related Messages which then can be used to group messages to conversations
         /// </summary>
-        public List<string> ReferenceIDs { get; set; }
+        public List<string> ReferenceIDs
+        {
+            get
+            {
+                string references = Headers.GetValue("References");
+                if (!String.IsNullOrEmpty(references))
+                {
+                    return (from r in references.Split(',')
+                            select r.Trim()).ToList();
+                }
+                else
+                {
+                    return new List<string>();
+                }
+            }
+            set
+            {
+                if (value.Count > 0)
+                {
+                    Headers.Add("References", String.Join(",", value.ToArray()));
+                }
+            }
+        }
+
         /// <summary>
         /// Gets or set the Subject
         /// </summary>
-        public string Subject { get; set; }
+        public string Subject
+        {
+            get
+            {
+                return Headers.GetValue("Subject");
+            }
+            set
+            {
+                Headers.Add("Subject", value);
+            }
+        }
         /// <summary>
         /// Gets or sets the from address for this mail message
         /// </summary>
-        public IMailAddress From { get; set; }
+        public IMailAddress From
+        {
+            get
+            {
+                IMailAddress mailAddress;
+                try
+                {
+                    mailAddress = MailAddress.Parse(Headers.GetValue("From"));
+                }
+                catch (Exception)
+                {
+                    mailAddress = null;
+                }
+                return mailAddress;
+            }
+            set
+            {
+                Headers.Add("From", value.ToString());
+            }
+        }
         /// <summary>
         /// Gets the address collection that contains the recipients of this e-mail message
         /// </summary>
-        public MailAddressCollection To { get; set; }
+        public MailAddressCollection To
+        {
+            get
+            {
+                return MailAddressCollection.Parse(Headers.GetValue("To"));
+            }
+            set
+            {
+                Headers.Add("To", value.ToString());
+            }
+        }
         /// <summary>
         /// Gets or sets the address collection that contains the carbon copy (CC) recipients for this e-mail message
         /// </summary>
-        public MailAddressCollection Cc { get; set; }
+        public MailAddressCollection Cc
+        {
+            get
+            {
+                return MailAddressCollection.Parse(Headers.GetValue("Cc"));
+            }
+            set
+            {
+                Headers.Add("Cc", value.ToString());
+            }
+        }
         /// <summary>
         /// Gets or sets the address collection that contains the blind carbon copy (BCC) recipients for this e-mail message
         /// </summary>
-        public MailAddressCollection Bcc { get; set; }
+        public MailAddressCollection Bcc
+        {
+            get
+            {
+                return MailAddressCollection.Parse(Headers.GetValue("Bcc"));
+            }
+            set
+            {
+                Headers.Add("Bcc", value.ToString());
+            }
+        }
         /// <summary>
         /// Gets or sets the ReplyTo address for the mail message
         /// </summary>
-        public IMailAddress ReplyTo { get; set; }
+        public IMailAddress ReplyTo
+        {
+            get
+            {
+                IMailAddress mailAddress;
+                try
+                {
+                    mailAddress = MailAddress.Parse(Headers.GetValue("Reply-To"));
+                }
+                catch (Exception)
+                {
+                    mailAddress = null;
+                }
+                return mailAddress;
+            }
+            set
+            {
+                Headers.Add("Reply-To", value.ToString());
+            }
+        }
         /// <summary>
         /// Gets or sets the message body
         /// </summary>
@@ -55,11 +168,42 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Gets or sets the mail priority
         /// </summary>
-        public MailPriority Priority { get; set; }
+        public MailPriority Priority
+        {
+            get
+            {
+                MailPriority priority;
+                try
+                {
+                    priority = (MailPriority)Enum.Parse(typeof(MailPriority), Headers.GetValue("X-Priority"));
+                }
+                catch (Exception)
+                {
+                    priority = MailPriority.Normal;
+                }
+                return priority;
+            }
+            set
+            {
+                Headers.Add("X-Priority", value.ToString());
+            }
+        }
         /// <summary>
         /// Gets or sets a collection that contains headers of this mail message
         /// </summary>
-        public MailHeaderCollection Headers { get; set; }
+        public MailHeaderCollection Headers
+        {
+            get
+            {
+                if (_headers == null)
+                    _headers = new MailHeaderCollection();
+                return _headers;
+            }
+            set
+            {
+                _headers = value;
+            }
+        }
         /// <summary>
         /// Gets a value indicating whether the message contains attachments
         /// </summary>
@@ -67,11 +211,39 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Gets or sets the Date of the mail message
         /// </summary>
-        public DateTime Date { get; set; }
+        public DateTime Date
+        {
+            get
+            {
+                DateTime dateTime = DateTime.MinValue;
+                string date = Headers.GetValue("Date");
+                if (!String.IsNullOrEmpty(date))
+                {
+                    dateTime = MimeUtilities.ParseRfc2822Date(date);
+                }
+                return dateTime;
+            }
+            set
+            {
+                Headers.Add("Date", value.ToRfc2822Date());
+            }
+        }
         /// <summary>
         /// Gets or sets the size of the message in bytes (including attachments)
         /// </summary>
-        public long Size { get; set; }
+        public long Size
+        {
+            get
+            {
+                long size = 0;
+                Int64.TryParse(Headers.GetValue("Size"), out size);
+                return size;
+            }
+            set
+            {
+                Headers.Add("Size", value.ToString());
+            }
+        }
         /// <summary>
         /// Gets or sets a collection that contains the messages attachments
         /// </summary>
@@ -90,7 +262,7 @@ namespace Opo.Net.Mail
             To = new MailAddressCollection();
             Cc = new MailAddressCollection();
             Bcc = new MailAddressCollection();
-            Headers = new MailHeaderCollection();
+            //Headers = new MailHeaderCollection();
             Attachments = new AttachmentCollection();
             AlternativeViews = new AlternativeViewCollection();
             BodyType = MailMessageBodyType.Html;

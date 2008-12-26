@@ -242,6 +242,10 @@ namespace Opo.Net.Mail
         /// <returns>true: if successfully logged in</returns>
         public bool Login(string username, string password, bool useApop)
         {
+            if (!EnsureSessionState("pass"))
+            {
+                Connect();
+            }
             bool loggedin = false;
             if (useApop && this.ApopTimestamp.IsNotNullOrEmpty())
             {
@@ -398,7 +402,6 @@ namespace Opo.Net.Mail
             int messageNumber = this.messages.GetMessageNumber(uid);
             return DeleteMessage(messageNumber);
         }
-
 
         #region Standard POP3 Commands
         public string USER(string username)
@@ -663,6 +666,9 @@ namespace Opo.Net.Mail
                 case "pass":
                 case "apop":
                     return (this.State == Pop3SessionState.Authorization);
+                case "quit":
+                    //TODO: Check if this is the right state
+                    return (this.State == Pop3SessionState.Update);
                 default:
                     return (this.State == Pop3SessionState.Transaction);
             }

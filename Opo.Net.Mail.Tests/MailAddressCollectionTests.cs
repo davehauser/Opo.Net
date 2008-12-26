@@ -11,14 +11,17 @@ namespace Opo.Net.Mail
     public class MailAddressCollectionTests
     {
         IMailAddress[] mailAddresses;
+        string[] mailAddressesString;
         
         [TestFixtureSetUp]
         public void FixtureSetup()
         {
             mailAddresses = new IMailAddress[3];
+            mailAddressesString = new string[3];
             for (int i = 0; i < 3; i++)
             {
                 mailAddresses[i] = new MailAddress("email" + i.ToString() + "@example.org", i % 2 == 0 ? "Email " + i.ToString() : "");
+                mailAddressesString[i] = mailAddresses[i].ToString();
             }
         }
 
@@ -66,6 +69,17 @@ namespace Opo.Net.Mail
             string expected = "\"Email 0\" <email0@example.org>" + separator + "email1@example.org" + separator + "\"Email 2\" <email2@example.org>";
 
             Assert.That(mailAddressCollection.ToString(separator), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void CanParseAddressesString()
+        {
+            MailAddressCollection mailAddressCollection = MailAddressCollection.Parse(String.Join(",", mailAddressesString));
+            Assert.That(mailAddressCollection.Count, Is.EqualTo(3));
+            for (int i = 0; i< 3;i++)
+            {
+                Assert.That(mailAddressCollection[i], Is.EqualTo(mailAddresses[i]));
+            }
         }
     }
 }
