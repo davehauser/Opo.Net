@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace Opo.Net.Mail
 {
     /// <summary>
     /// Collection of IMailAddresses
     /// </summary>
+    [XmlRoot("mailAddresses")]
     public class MailAddressCollection : List<IMailAddress>
     {
         /// <summary>
@@ -39,6 +41,25 @@ namespace Opo.Net.Mail
         public string ToString(string separator)
         {
             return String.Join(separator, this.Select(m => m.ToString()).ToArray());
+        }
+
+        public static MailAddressCollection Parse(string mailAddresses)
+        {
+            MailAddressCollection mailAddressCollection = new MailAddressCollection();
+            if (!String.IsNullOrEmpty(mailAddresses))
+            {
+                string[] addresses = mailAddresses.Split(',');
+                foreach (string address in addresses)
+                {
+                    try
+                    {
+                        IMailAddress m = MailAddress.Parse(address.Trim());
+                        mailAddressCollection.Add(m);
+                    }
+                    catch (Exception) { }
+                }
+            }
+            return mailAddressCollection;
         }
     }
 }

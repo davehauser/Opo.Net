@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
+using System.Xml.Schema;
+using System.Xml;
 
 namespace Opo.Net.Mail
 {
+    [XmlRoot("mailAddress")]
     public class MailAddress : IMailAddress
     {
         private string _address;
-        
+
         /// <summary>
         /// Gets or sets the address part of the mail address, e.g. "email@sample.org"
         /// </summary>
+        [XmlElement("address")]
         public string Address
         {
             get { return _address; }
@@ -27,11 +32,13 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Gets or sets the name, that is displayed with the address, e.g "Sample Email Account"
         /// </summary>
+        [XmlElement("displayName")]
         public string DisplayName { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the host part of the address (the part after the @)
         /// </summary>
+        [XmlIgnore]
         public string Host
         {
             get
@@ -47,6 +54,7 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Gets or sets the account name of the address (the part before the @)
         /// </summary>
+        [XmlIgnore]
         public string AccountName
         {
             get
@@ -94,6 +102,19 @@ namespace Opo.Net.Mail
                            .Replace("{accountname", "{2")
                            .Replace("{domain", "{3");
             return String.Format(format, this.Address, this.DisplayName, this.AccountName, this.Host);
+        }
+
+        public override bool Equals(object obj)
+        {
+            IMailAddress mailAddress = obj as IMailAddress;
+            if (mailAddress != null)
+            {
+                return (Address == mailAddress.Address && DisplayName == mailAddress.DisplayName);
+            }
+            else
+            {
+                return false;
+            }
         }
 
         #region Static methods

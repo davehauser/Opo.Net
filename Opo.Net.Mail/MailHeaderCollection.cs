@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace Opo.Net.Mail
 {
@@ -34,7 +35,8 @@ namespace Opo.Net.Mail
         /// <returns>A String containing the value of the specific header</returns>
         public string GetValue(string name)
         {
-            return this.FirstOrDefault(h => h.Name == name).Value;
+            MailHeader header = this.FirstOrDefault(h => h.Name == name);
+            return header != null ? header.Value : "";
         }
     }
 }

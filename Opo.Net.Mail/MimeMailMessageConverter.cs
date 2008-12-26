@@ -7,7 +7,6 @@ using Opo.Net.Mime;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.IO;
-using Debug = System.Diagnostics.Debug;
 
 namespace Opo.Net.Mail
 {
@@ -103,7 +102,10 @@ namespace Opo.Net.Mail
             {
                 mailMessage.From = MailAddress.Parse(from[0]);
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                mailMessage.From = null;
+            }
 
             string[] to = mimeEntity.GetHeaderValue("To").Split(',');
             foreach (string address in to)
@@ -153,7 +155,7 @@ namespace Opo.Net.Mail
             mailMessage.Priority = (MailPriority)priority;
 
             // set MessageID and Reference-IDs
-            mailMessage.MessageID = mimeEntity.GetHeaderValue("Message-ID").Replace("<", "").Replace(">","");
+            mailMessage.MessageID = mimeEntity.GetHeaderValue("Message-ID").Replace("<", "").Replace(">", "");
             string[] referenceIDs = mimeEntity.GetHeaderValue("References").Replace("> <", ",").Replace("<", "").Replace(">", "").Split(',');
             mailMessage.ReferenceIDs.AddRange(referenceIDs);
 
@@ -169,7 +171,6 @@ namespace Opo.Net.Mail
             if (mimeEntity is TextMimeEntity)
             {
                 // set mail body
-                Debug.WriteLine("Is TextMimeEntity --> Set Body");
                 mailMessage.Body = (mimeEntity as TextMimeEntity).GetContent();
                 string textType = mimeEntity.ContentType;
                 if (textType.Contains('/'))
@@ -187,13 +188,11 @@ namespace Opo.Net.Mail
             }
             else if (mimeEntity is AttachmentMimeEntity)
             {
-                Debug.WriteLine("Is AttachmentMimeEntity --> Create Attachment");
                 // TODO: create attachment
             }
 
             if (mimeEntity.HasEntities)
             {
-                Debug.WriteLine("HasEntities==true --> Process");
                 ProcessEntities(ref mailMessage, mimeEntity);
             }
             return mailMessage;
@@ -275,7 +274,63 @@ namespace Opo.Net.Mail
         /// <returns>A string containing the MIME data</returns>
         public object ConvertTo(IMailMessage mailMessage)
         {
-            throw new NotImplementedException();
+            StringBuilder mimeData = new StringBuilder();
+
+            // add headers
+            foreach (MailHeader header in mailMessage.Headers)
+            {
+                mimeData.AppendLine(header.Name + ": " + header.Value);
+            }
+            mimeData.AppendLine();
+
+            // message type
+            if (mailMessage.HasAttachments)
+            {
+                string boundary = GenerateBoundary();
+                mimeData.AppendLine("Content-Type: " + MediaType.Multipart.Mixed);
+                mimeData.AppendLine("\tboundary=\"---=_Part_" + boundary + "\"");
+            }
+            else if (mailMessage.AlternativeViews.Count > 0)
+            {
+                string boundary = GenerateBoundary();
+                mimeData.AppendLine("Content-Type: " + MediaType.Multipart.Alternative);
+                mimeData.AppendLine("\tboundary=\"" + boundary + "\"");
+                mimeData.AppendLine();
+                mimeData.AppendLine("--" + boundary);
+                switch (mailMessage.BodyType)
+                {
+                    case MailMessageBodyType.Html:
+                        mimeData.AppendLine("Content-Type: text/html");
+                        break;
+                    case MailMessageBodyType.PlainText:
+                    default:
+                        mimeData.AppendLine("Content-Type: text/plain");
+                        break;
+                }
+
+            }
+            else
+            {
+                mimeData.AppendLine(mailMessage.Body);
+            }
+
+            return mimeData;
+        }
+
+        private string ConvertAlternativeViews(AlternativeViewCollection alternativeViews, string boundary)
+        {
+            StringBuilder mimeData = new StringBuilder();
+            foreach (AlternativeView alternativeView in alternativeViews)
+            {
+                mimeData.AppendLine("--" + boundary);
+                mimeData.AppendLine("Content-Type: " + alternativeView.ContentType + ";");
+                mimeData.AppendLine("\tcharset=\"" + alternativeView.Charset + "\"");
+                mimeData.AppendLine("Content-Transfer-Encoding: " + alternativeView.TransferEncoding);
+                mimeData.AppendLine();
+                mimeData.AppendLine(alternativeView.Content);
+                mimeData.AppendLine();
+            }
+            return mimeData.ToString();
         }
 
         /// <summary>
@@ -342,6 +397,13 @@ namespace Opo.Net.Mail
                 addresses[i] = revisedAddress;
             }
             return addresses;
+        }
+
+        private string GenerateBoundary()
+        {
+            string boundary = "---=_Part_";
+            boundary += Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Replace("/", "_").Replace("+", ".").Substring(0, 22);
+            return boundary;
         }
     }
 }

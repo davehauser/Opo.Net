@@ -46,9 +46,9 @@
     <ContentType>multipart/mixed</ContentType>
     <Priority>Normal</Priority>
     <Headers>
-        <Header1>Header1 Content</Header1>
-        <Header2>Header2 Content</Header2>
-        <Header3>Header3 Content</Header3>
+        <Header name="header1">Header1 Content</Header>
+        <Header name="header2">Header2 Content</Header>
+        <Header name="header3">Header3 Content</Header>
     </Headers>
     <Body>
         <View ContentType="text/html" Charset="iso-8859-1" TransferEncoding="quoted-printable">
@@ -63,7 +63,7 @@
         </View>
     </Body>
     <Attachments>
-        <Attachment>
+        <Attachment filePath="blablabla">
             <Name>Attachment 1</Name>
             <ContentType>image/gif</ContentType>
             <ContentDisposition>

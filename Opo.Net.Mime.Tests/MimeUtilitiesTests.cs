@@ -38,5 +38,11 @@ namespace Opo.Net.Mime
         {
             Assert.That(MimeUtilities.ParseRfc2822Date(_rfc2822Date2), Is.EqualTo(_utcDate));
         }
+
+        [Test]
+        public void CanConvertDateToRfc2822String()
+        {
+            Assert.That(MimeUtilities.ToRfc2822Date(_utcDate), Is.EqualTo(_rfc2822Date));
+        }
     }
 }

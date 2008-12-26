@@ -2,21 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using Opo.ProjectBase;
+using System.Xml.Serialization;
 
 namespace Opo.Net.Mail
 {
     /// <summary>
     /// Represents a mail header
     /// </summary>
+    [XmlRoot("header")]
     public class MailHeader
     {
         /// <summary>
         /// Gets or sets the name of the header
         /// </summary>
+        [XmlAttribute("name")]
         public string Name { get; set; }
         /// <summary>
         /// Gets or sets the value of the header
         /// </summary>
+        [XmlAttribute("value")]
         public string Value { get; set; }
 
         /// <summary>

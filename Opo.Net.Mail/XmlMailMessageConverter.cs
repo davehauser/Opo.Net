@@ -2,184 +2,318 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Xml.Linq;
-using System.IO;
+using Opo.ProjectBase;
 using Opo.Net.Mime;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Xml.Linq;
 using System.Xml;
 
 namespace Opo.Net.Mail
 {
     /// <summary>
-    /// Converts a Opo.Net.Mail.MailMessage to Xml and vice versa
+    /// Converts XML data to MailMessage and vice versa
     /// </summary>
     public class XmlMailMessageConverter : IMailMessageConverter
     {
         /// <summary>
+        /// Initializes a new instance of the XmlMailMessageConverter class.
+        /// </summary>
+        public XmlMailMessageConverter() { }
+
+        /// <summary>
         /// Converts XML data to MailMessage
         /// </summary>
-        /// <param name="data">An XElement or a String containing the XML data</param>
-        /// <returns>A new instance of the MailMessage class</returns>
+        /// <param name="data">An string containing the XML data (String or XDocument)</param>
+        /// <returns>A new instance of the <see cref="MailMessage">MailMessage</see> class</returns>
         public IMailMessage ConvertFrom(object data)
         {
-            XElement xmlMessage = data as XElement;
-            if (xmlMessage == null)
+            IMailMessage mailMessage;
+            if (data is String)
             {
-                if (data is string)
-                    xmlMessage = XElement.Parse(data as string);
-                else
-                    return null;
+                mailMessage = ConvertFrom(data as String);
             }
-
-            IMailMessage message = new MailMessage();
-
-            if (xmlMessage == null)
-                return new MailMessage();
-            message.MessageID = xmlMessage.Element("MessageID").Value;
-            message.From = MailAddressFromXml(xmlMessage.Descendants("From").FirstOrDefault());
-            message.To = MailAddressListFromXml(xmlMessage.Descendants("To").Elements().ToArray());
-            message.Cc = MailAddressListFromXml(xmlMessage.Descendants("CC").Elements().ToArray());
-            message.Bcc = MailAddressListFromXml(xmlMessage.Descendants("Bcc").Elements().ToArray());
-            message.Subject = xmlMessage.Descendants("Subject").FirstOrDefault().Value;
-            message.ReferenceIDs = ReferenceIDsFromXml(xmlMessage.Descendants("Conversation").Elements().ToArray());
-            message.Date = DateTime.Parse(xmlMessage.Descendants("Date").FirstOrDefault().Value);
-            message.Priority = ((MailPriority)Enum.Parse(typeof(MailPriority), xmlMessage.Descendants("Priority").FirstOrDefault().Value));
-            message.Headers = HeadersFromXml(xmlMessage.Descendants("Headers").FirstOrDefault());
-            // body & alternate views
-            var views = from v in xmlMessage.Descendants("Body").Descendants("View")
-                        select v;
-            if (views.Count() == 0)
+            else if (data is XDocument)
             {
-                message.Body = "";
+                mailMessage = ConvertFrom(data as XDocument);
             }
             else
             {
-                var htmlBody = views.Where(v => v.Attribute("ContentType").Value == MediaType.Text.Html);
-                var textBody = views.Where(v => v.Attribute("ContentType").Value == MediaType.Text.Plain);
-                var otherViews = views.Where(v => v.Attribute("ContentType").Value != MediaType.Text.Html && v.Attribute("ContentType").Value != MediaType.Text.Plain);
-                if (htmlBody.Count() > 0)
+                throw new ArgumentException("Input type " + data.GetType().ToString() + " is not supported by XmlMailMessageConverter");
+            }
+            return mailMessage;
+        }
+
+        /// <summary>
+        /// Converts XML string to MailMessage
+        /// </summary>
+        /// <param name="xmlData">A String containing the XML data</param>
+        /// <returns>A new instance of the MailMessage class</returns>
+        /// <exception cref="XmlException">Throws a XmlException if the input string contains no valid XML data.</exception>
+        public IMailMessage ConvertFrom(string xmlData)
+        {
+            XDocument xDocument = new XDocument();
+            try
+            {
+                xDocument = XDocument.Parse(xmlData);
+            }
+            catch (XmlException)
+            {
+                throw;
+            }
+            return ConvertFrom(xDocument);
+        }
+        /// <summary>
+        /// Converts XDocument to MailMessage
+        /// </summary>
+        /// <param name="xmlData">A XDocument containing the xml mail data</param>
+        /// <returns>A new instance of the MailMessage class</returns>
+        public IMailMessage ConvertFrom(XDocument xmlData)
+        {
+            IMailMessage mailMessage = new MailMessage();
+
+            // headers
+            var headers = from h in xmlData.Element("headers").Elements("header")
+                          select new MailHeader(h.Attribute("name").Value, h.Value);
+            mailMessage.Headers.AddRange(headers);
+
+            // email addresses
+            mailMessage.From = GetMailAddress(xmlData, "from");
+            mailMessage.To = GetMailAddressCollection(xmlData, "to");
+            mailMessage.Cc = GetMailAddressCollection(xmlData, "cc");
+            mailMessage.Bcc = GetMailAddressCollection(xmlData, "bcc");
+            mailMessage.ReplyTo = GetMailAddress(xmlData, "replyTo");
+
+            // message-id, subject, date etc.
+            mailMessage.MessageID = xmlData.Element("messageID").Value;
+            mailMessage.ReferenceIDs = (from r in xmlData.Element("referenceIDs").Elements("messageID")
+                                        select r.Value).ToList();
+            mailMessage.Subject = xmlData.Element("subject").Value;
+            mailMessage.Date = xmlData.Element("date").Value.ToDate();
+            mailMessage.Priority = xmlData.Element("priority").Value.ToEnum<MailPriority>(MailPriority.Normal);
+
+            // body
+            var views = from v in xmlData.Element("body").Elements("view")
+                        select new
+                        {
+                            ContentType = v.Attribute("contentType").Value,
+                            Charset = v.Attribute("charset").Value,
+                            TransferEncoding = v.Attribute("transferEncoding").Value,
+                            Content = v.Value
+                        };
+            bool bodySet = false;
+            foreach (var view in views)
+            {
+                if (bodySet)
                 {
-                    message.Body = htmlBody.First().Value;
-                    if (textBody.Count() > 0)
-                    {
-                        message.AlternativeViews.Add(AlternativeView.LoadXmlAlternativeView(textBody.First()));
-                    }
-                }
-                else if (textBody.Count() > 0)
-                {
-                    message.Body = textBody.First().Value;
+                    IAlternativeView alternativeView = new AlternativeView(view.Content, view.ContentType);
+                    alternativeView.Charset = view.Charset;
+                    alternativeView.TransferEncoding = view.TransferEncoding;
+                    mailMessage.AlternativeViews.Add(alternativeView);
                 }
                 else
                 {
-                    message.Body = otherViews.First().Value;
-                    otherViews.First().Remove();
-                }
-                foreach (XElement v in otherViews)
-                {
-                    message.AlternativeViews.Add(AlternativeView.LoadXmlAlternativeView(v));
+                    mailMessage.Body = view.Content;
+                    mailMessage.BodyType = view.ContentType.ToEnum<MailMessageBodyType>(MailMessageBodyType.PlainText);
+                    bodySet = true;
                 }
             }
-            return message;
+
+            // attachments
+            var attachments = from a in xmlData.Element("attachments").Elements("attachment")
+                              let contentDisp = a.Element("contentDisposition")
+                              select new
+                              {
+                                  FilePath = a.Attribute("filePath").Value,
+                                  Name = a.Element("name").Value,
+                                  ContentType = a.Element("contentType").Value,
+                                  ContentDisposition = new
+                                  {
+                                      Type = contentDisp.Element("type").Value,
+                                      FileName = contentDisp.Element("fileName").Value,
+                                      CreationDate = contentDisp.Element("creationDate").Value,
+                                      ModificationDate = contentDisp.Element("modificationDate").Value,
+                                      ReadDate = contentDisp.Element("readDate").Value,
+                                      Size = contentDisp.Element("size").Value
+                                  },
+                                  Size = a.Element("size").Value,
+                                  TransferEncoding = a.Element("transferEncoding").Value,
+                                  FileName = a.Element("fileName").Value
+                              };
+            foreach (var a in attachments)
+            {
+                IAttachment attachment = new Attachment(a.FilePath);
+                attachment.Name = a.Name;
+                attachment.ContentType = a.ContentType;
+                attachment.ContentDisposition.DispositionType = a.ContentDisposition.Type;
+                attachment.ContentDisposition.FileName = a.ContentDisposition.FileName;
+                attachment.ContentDisposition.CreationDate = a.ContentDisposition.CreationDate.ToDate();
+                attachment.ContentDisposition.ModificationDate = a.ContentDisposition.ModificationDate.ToDate();
+                attachment.ContentDisposition.ReadDate = a.ContentDisposition.ReadDate.ToDate();
+                attachment.ContentDisposition.Size = a.ContentDisposition.Size.ToLong();
+                attachment.Size = a.Size.ToLong();
+                attachment.TransferEncoding = a.TransferEncoding;
+                mailMessage.Attachments.Add(attachment);
+            }
+
+            return mailMessage;
+        }
+
+        private IMailAddress GetMailAddress(XDocument xmlData, string type)
+        {
+            IMailAddress mailAddress = null;
+            XElement xmlAddress = xmlData.Element(type).Element("mailAddress");
+            if (xmlAddress != null)
+            {
+                mailAddress = new MailAddress(xmlAddress.Element("address").Value);
+                if (xmlAddress.Element("displayName") != null)
+                {
+                    mailAddress.DisplayName = xmlAddress.Element("displayName").Value;
+                }
+            }
+            return mailAddress;
+        }
+        private MailAddressCollection GetMailAddressCollection(XDocument xmlData, string type)
+        {
+            MailAddressCollection mailAddresses = new MailAddressCollection();
+            foreach (var mailAddress in xmlData.Element(type).Elements("mailAddress"))
+            {
+                mailAddresses.Add(new MailAddress(
+                    mailAddress.Element("address").Value,
+                    (mailAddress.Element("displayName") != null) ? mailAddress.Element("displayName").Value : ""
+                ));
+            }
+            return mailAddresses;
         }
 
         /// <summary>
         /// Converts an IMailMessage to XML data
         /// </summary>
         /// <param name="mailMessage">IMailMessage to convert</param>
-        /// <returns>An XElement representing the IMailMessage</returns>
+        /// <returns>A string containing the XML data</returns>
         public object ConvertTo(IMailMessage mailMessage)
         {
-            // conversation ids
-            XElement xmlConversation = new XElement("Conversation");
+            // reference ids
+            XElement xmlReferenceIDs = new XElement("referenceIDs");
             foreach (string referenceID in mailMessage.ReferenceIDs)
             {
-                xmlConversation.Add(new XElement("MessageID", referenceID));
-            }
-            // headers
-            XElement xmlHeaders = new XElement("Headers");
-            foreach (MailHeader header in mailMessage.Headers)
-            {
-                xmlHeaders.Add(new XElement(header.Name, header.Value));
-            }
-            // alternative views
-            XElement xmlAlternativeViews = new XElement("Body");
-            foreach (AlternativeView view in mailMessage.AlternativeViews)
-            {
-                xmlAlternativeViews.Add(new XElement("View",
-                    new XAttribute("ContentType", view.ContentType ?? ""),
-                    new XAttribute("TransferEncoding", view.TransferEncoding ?? ""),
-                    new XAttribute("Charset", (view.Charset ?? "utf8")),
-                    "<![CDATA[" + view.Content.HtmlEncode() + "]]>")
-                    );
+                xmlReferenceIDs.Add(new XElement("messageID", referenceID));
             }
 
-            // build xml file
-            XDocument xmlMailMessage = new XDocument(
-                new XDeclaration("1.0", "utf-8", "yes"),
-                new XElement("MailMessage",
-                    new XElement("MessageID", mailMessage.MessageID),
-                    xmlConversation,
-                    new XElement("From", MailAddressToXml(mailMessage.From)),
-                    new XElement("To", MailAddressListToXml(mailMessage.To)),
-                    new XElement("CC", MailAddressListToXml(mailMessage.Cc)),
-                    new XElement("Bcc", MailAddressListToXml(mailMessage.Bcc)),
-                    new XElement("Subject", mailMessage.Subject),
-                    new XElement("Date", mailMessage.Date.ToString("r")),
-                    new XElement("Priority", mailMessage.Priority.ToString()),
-                    xmlHeaders,
-                    xmlAlternativeViews
-                    )
+            // headers
+            string[] doNotAddToHeaders = new string[] { "from", "to", "cc", "bcc", "reply-to", "subject", "date", "x-priority" };
+            XElement xmlHeaders = new XElement("headers");
+            foreach (MailHeader header in mailMessage.Headers)
+            {
+                if (!doNotAddToHeaders.Contains(header.Name.ToLower()))
+                {
+                    xmlHeaders.Add(new XElement("header", new XAttribute("name", header.Name), header.Value));
+                }
+            }
+
+            // body
+            XElement xmlBody = new XElement("body");
+            xmlBody.Add(new XElement("view",
+                new XAttribute("contentType", mailMessage.BodyType),
+                mailMessage.Body));
+            foreach (IAlternativeView view in mailMessage.AlternativeViews)
+            {
+                xmlBody.Add(new XElement("view",
+                    new XAttribute("contentType", view.ContentType),
+                    new XAttribute("charset", view.Charset),
+                    new XAttribute("transferEncoding", view.TransferEncoding),
+                    view.Content));
+            }
+
+            // attachments
+            XElement xmlAttachments = new XElement("attachments");
+            foreach (IAttachment attachment in mailMessage.Attachments)
+            {
+                xmlAttachments.Add(new XElement("attachment",
+                    new XElement("name", attachment.Name),
+                    new XElement("contentType", attachment.ContentType),
+                    new XElement("contentDisposition",
+                        new XElement("type", attachment.ContentDisposition.DispositionType),
+                        new XElement("fileName", attachment.ContentDisposition.FileName),
+                        new XElement("creationDate", attachment.ContentDisposition.CreationDate),
+                        new XElement("modificationDate", attachment.ContentDisposition.ModificationDate),
+                        new XElement("readDate", attachment.ContentDisposition.ReadDate),
+                        new XElement("size", attachment.ContentDisposition.Size)
+                    ),
+                    new XElement("size", attachment.Size),
+                    new XElement("transferEncoding", attachment.TransferEncoding),
+                    new XElement("fileName")
+                ));
+            }
+
+
+            // build xml message
+            XElement xmlMessage = new XElement("mailMessage",
+                new XElement("messageID", mailMessage.MessageID),
+                xmlReferenceIDs,
+                new XElement("from", GetXmlMailAddress(mailMessage.From)),
+                new XElement("to", GetXmlMailAddresses(mailMessage.To)),
+                new XElement("cc", GetXmlMailAddresses(mailMessage.Cc)),
+                new XElement("bcc", GetXmlMailAddresses(mailMessage.Bcc)),
+                new XElement("replyTo", GetXmlMailAddress(mailMessage.ReplyTo)),
+                new XElement("subject", mailMessage.Subject),
+                new XElement("date", mailMessage.Date),
+                new XElement("priority", mailMessage.Priority),
+                xmlHeaders,
+                xmlBody,
+                xmlAttachments
+            );
+
+            return new XDocument(new XDeclaration("1.0", "utf-8", "yes"), xmlMessage);
+        }
+
+        private XElement GetXmlMailAddress(IMailAddress mailAddress)
+        {
+            XElement xmlAddress = null;
+            if (mailAddress != null)
+            {
+                xmlAddress = new XElement("mailAddress");
+                xmlAddress.Add(
+                    new XElement("address", mailAddress.Address),
+                    new XElement("displayName", mailAddress.DisplayName)
                 );
-            return xmlMailMessage;
+            }
+            return xmlAddress;
+        }
+        private XElement[] GetXmlMailAddresses(MailAddressCollection mailAddressCollection)
+        {
+            List<XElement> xmlAddresses = new List<XElement>();
+            foreach (IMailAddress mailAddress in mailAddressCollection)
+            {
+                xmlAddresses.Add(GetXmlMailAddress(mailAddress));
+            }
+            return xmlAddresses.ToArray();
         }
 
         /// <summary>
         /// Loads an XML file to a IMailMessage
         /// </summary>
-        /// <param name="filePath">Absolute path to the xml file</param>
+        /// <param name="filePath">Absolute path to the XML file</param>
         /// <returns>A new instance of the MailMessage class</returns>
         public IMailMessage LoadFromFile(string filePath)
         {
-            string mailPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
             if (!File.Exists(filePath))
-                throw new FileNotFoundException(String.Concat("[", filePath, "] not found."));
-            XElement xmlMessage = XDocument.Load(filePath).Element("MailMessage");
+                throw new IOException("File not found: " + filePath);
 
-            IMailMessage message = ConvertFrom(xmlMessage);
-
-            // attachments
-            var attachments = from v in xmlMessage.Descendants("Attachments").Descendants("Attachment")
-                              select v;
-            if (attachments.Count() > 0)
-            {
-                foreach (var attachment in attachments)
-                {
-                    Attachment a = new Attachment(Path.Combine(mailPath, attachment.Element("FileName").Value));
-                    a.Name = attachment.Element("Name").Value;
-                    a.ContentType = attachment.Element("ContentType").Value;
-                    a.Size = int.Parse(attachment.Element("Size").Value);
-                    a.TransferEncoding = attachment.Element("TransferEncoding").Value;
-                    //var contentDisposition = attachment.Element("ContentDisposition");
-                    //a.ContentDisposition.DispositionType = contentDisposition.Element("Type").Value;
-                    //a.ContentDisposition.FileName = contentDisposition.Element("FileName").Value;
-                    //a.ContentDisposition.CreationDate = DateTime.Parse(contentDisposition.Element("CreationDate").Value);
-                    //a.ContentDisposition.ModificationDate = DateTime.Parse(contentDisposition.Element("ModificationDate").Value);
-                    //a.ContentDisposition.ReadDate = DateTime.Parse(contentDisposition.Element("ReadDate").Value);
-                    message.Attachments.Add(a);
-                }
-            }
-            return message;
+            StreamReader mimeReader = new StreamReader(File.OpenRead(filePath));
+            return ConvertFrom(mimeReader.ReadToEnd());
         }
 
         /// <summary>
         /// Saves a IMailMessage to a XML file
         /// </summary>
         /// <param name="mailMessage">IMailMessage to convert</param>
-        /// <param name="path">Absolute path where the XML file is saved</param>
+        /// <param name="path">Absolute path where the MIME file is saved</param>
         /// <returns>A String containing the generated filename of the XML file</returns>
-        public string SaveToFile(IMailMessage mailMessage, string path)
+        public string SaveToFile(IMailMessage message, string path)
         {
-            string fileName = String.Concat(mailMessage.MessageID, ".xml");
-            return SaveToFile(mailMessage, path, fileName);
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -189,106 +323,9 @@ namespace Opo.Net.Mail
         /// <param name="path">Absolute path where the XML file is saved</param>
         /// <param name="fileName">Filename for the XML file</param>
         /// <returns>A String containing the filename of the XML file</returns>
-        public string SaveToFile(IMailMessage mailMessage, string path, string fileName)
+        public string SaveToFile(IMailMessage message, string path, string fileName)
         {
-            XDocument xmlMailMessage = ConvertTo(mailMessage) as XDocument;
-
-            if (xmlMailMessage != null)
-            {
-                // attachments
-                XElement xmlAttachments = new XElement("Attachments");
-                foreach (Attachment attachment in mailMessage.Attachments)
-                {
-
-                    xmlAttachments.Add(new XElement("Attachment",
-                        new XElement("Name", attachment.Name),
-                        new XElement("ContentType", attachment.ContentType ?? ""),
-                        new XElement("ContentDisposition",
-                            new XElement("Type", attachment.ContentDisposition.DispositionType ?? ""),
-                            new XElement("FileName", attachment.ContentDisposition.FileName ?? ""),
-                            new XElement("CreationDate", attachment.ContentDisposition.CreationDate),
-                            new XElement("ModificationDate", attachment.ContentDisposition.ModificationDate),
-                            new XElement("ReadDate", attachment.ContentDisposition.ReadDate),
-                            new XElement("Size", attachment.Size)
-                            ),
-                        new XElement("Size", attachment.Size),
-                        new XElement("TransferEncoding", attachment.TransferEncoding),
-                        new XElement("FileName", Path.GetFileName(attachment.SaveToFile(path, String.Concat(Path.GetFileNameWithoutExtension(fileName), "_", attachment.ContentDisposition.FileName))))
-                        )
-                    );
-                }
-                xmlMailMessage.Add(xmlAttachments);
-
-                xmlMailMessage.Save(Path.Combine(path, fileName));
-                return fileName;
-            }
-            else
-            {
-                return String.Empty;
-            }
+            throw new NotImplementedException();
         }
-
-        #region helper methods
-        private static XElement MailAddressToXml(IMailAddress mailAddress)
-        {
-            XElement xmlAddress = new XElement("MailAddress",
-                new XElement("Address", mailAddress.Address));
-            if (mailAddress.DisplayName.IsNotNullOrEmpty())
-                xmlAddress.Add(new XElement("DisplayName", mailAddress.DisplayName));
-            return xmlAddress;
-        }
-        private static MailAddress MailAddressFromXml(XElement xmlAddress)
-        {
-            var address = xmlAddress.Descendants("address").First();
-            var displayName = xmlAddress.Descendants("displayName");
-            MailAddress a = new MailAddress(address.Value);
-            if (displayName.Count() > 0)
-                a.DisplayName = displayName.First().Value;
-            return a;
-        }
-        private static XElement[] MailAddressListToXml(IList<IMailAddress> mailAddressList)
-        {
-            List<XElement> mailAddresses = new List<XElement>();
-            for (int i = 0; i < mailAddressList.Count; i++)
-            {
-                XElement xmlAddress = new XElement("mailAddress",
-                    new XElement("address", mailAddressList[i].Address));
-                if (mailAddressList[i].DisplayName.IsNotNullOrEmpty())
-                    xmlAddress.Add(new XElement("displayName", mailAddressList[i].DisplayName));
-                mailAddresses.Add(xmlAddress);
-            }
-            return mailAddresses.ToArray();
-        }
-        private static MailAddressCollection MailAddressListFromXml(IEnumerable<XElement> xmlAddressList)
-        {
-            MailAddressCollection addressCollection = new MailAddressCollection();
-            foreach (XElement xmlAddress in xmlAddressList)
-            {
-                addressCollection.Add(MailAddressFromXml(xmlAddress));
-            }
-            return addressCollection;
-        }
-        private static MailHeaderCollection HeadersFromXml(XElement headersElement)
-        {
-            MailHeaderCollection headersCollection = new MailHeaderCollection();
-            if (headersElement != null)
-            {
-                foreach (XElement header in headersElement.DescendantNodes())
-                {
-                    headersCollection.Add(header.Name.ToString(), header.Value);
-                }
-            }
-            return headersCollection;
-        }
-        private static List<string> ReferenceIDsFromXml(IEnumerable<XElement> xmlReferenceIDs)
-        {
-            List<string> referenceIDs = new List<string>();
-            foreach (XElement referenceID in xmlReferenceIDs)
-            {
-                referenceIDs.Add(referenceID.Value);
-            }
-            return referenceIDs;
-        }
-        #endregion
     }
 }

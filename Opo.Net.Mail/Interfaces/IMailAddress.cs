@@ -1,4 +1,5 @@
-﻿namespace Opo.Net.Mail
+﻿using System.Xml.Serialization;
+namespace Opo.Net.Mail
 {
     /// <summary>
     /// Represents a email address
