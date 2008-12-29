@@ -29,7 +29,7 @@ namespace Opo.Net.Mail
         [Test]
         public void CanCreateMailboxInfo()
         {
-            Pop3Client.MailboxInfo mailboxInfo = new Pop3Client.MailboxInfo(1, 1);
+            MailboxInfo mailboxInfo = new MailboxInfo(1, 1);
 
             Assert.That(mailboxInfo.NumberOfMessages, Is.EqualTo(1));
             Assert.That(mailboxInfo.MailboxSize, Is.EqualTo(1));
@@ -38,7 +38,7 @@ namespace Opo.Net.Mail
         [Test]
         public void CanCreateMessageInfo()
         {
-            Pop3Client.MessageInfo messageInfo = new Pop3Client.MessageInfo(1, 1, "1");
+            MessageInfo messageInfo = new MessageInfo(1, 1, "1");
 
             Assert.That(messageInfo.MessageNumber, Is.EqualTo(1));
             Assert.That(messageInfo.Size, Is.EqualTo(1));
@@ -48,15 +48,15 @@ namespace Opo.Net.Mail
         [Test]
         public void CanCreateMessageInfoCollection()
         {
-            Pop3Client.MessageInfoCollection messageInfoCollection = new Pop3Client.MessageInfoCollection();
-            messageInfoCollection.Add(new Pop3Client.MessageInfo(1, 1, "1"));
-            messageInfoCollection.Add(new Pop3Client.MessageInfo(2, 2, "2"));
-            messageInfoCollection.Add(new Pop3Client.MessageInfo(3, 3, "3"));
+            MessageInfoCollection messageInfoCollection = new MessageInfoCollection();
+            messageInfoCollection.Add(new MessageInfo(1, 1, "1"));
+            messageInfoCollection.Add(new MessageInfo(2, 2, "2"));
+            messageInfoCollection.Add(new MessageInfo(3, 3, "3"));
 
             Assert.That(messageInfoCollection.Count, Is.EqualTo(3));
-            Assert.That(messageInfoCollection.ElementAt<Pop3Client.MessageInfo>(0).MessageNumber, Is.EqualTo(1));
-            Assert.That(messageInfoCollection.ElementAt<Pop3Client.MessageInfo>(1).MessageNumber, Is.EqualTo(2));
-            Assert.That(messageInfoCollection.ElementAt<Pop3Client.MessageInfo>(2).MessageNumber, Is.EqualTo(3));
+            Assert.That(messageInfoCollection.ElementAt<MessageInfo>(0).MessageNumber, Is.EqualTo(1));
+            Assert.That(messageInfoCollection.ElementAt<MessageInfo>(1).MessageNumber, Is.EqualTo(2));
+            Assert.That(messageInfoCollection.ElementAt<MessageInfo>(2).MessageNumber, Is.EqualTo(3));
         }
     }
 }

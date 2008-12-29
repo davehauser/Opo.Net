@@ -47,6 +47,11 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Logs a user in
         /// </summary>
+        /// <returns>A value indicating whether login was successful</returns>
+        bool Login();
+        /// <summary>
+        /// Logs a user in
+        /// </summary>
         /// <param name="username">Username for the login</param>
         /// <param name="password">Users password</param>
         /// <returns>A value indicating whether login was successful</returns>
