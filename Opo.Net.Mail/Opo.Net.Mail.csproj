@@ -32,10 +32,6 @@
     <DocumentationFile>bin\Release\Opo.Net.Mail.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Opo.Net, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Opo.Perspective\Solution Items\Opo.Net.dll</HintPath>
-    </Reference>
     <Reference Include="Opo.ProjectBase, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Solution Items\Opo.ProjectBase.dll</HintPath>
@@ -60,6 +56,8 @@
     <Compile Include="AttachmentCollection.cs" />
     <Compile Include="ContentDisposition.cs" />
     <Compile Include="Enums\AttachmentType.cs" />
+    <Compile Include="Enums\Pop3SessionState.cs" />
+    <Compile Include="Exceptions\Pop3Exception.cs" />
     <Compile Include="ExtensionMethods\StringExtensionMethods.cs" />
     <Compile Include="Interfaces\IAlternativeView.cs" />
     <Compile Include="AlternativeViewCollection.cs" />
@@ -69,18 +67,28 @@
     <Compile Include="Interfaces\IMailMessageConverter.cs" />
     <Compile Include="Interfaces\IRecieveMailClient.cs" />
     <Compile Include="Interfaces\ISendMailClient.cs" />
+    <Compile Include="IPop3Client.cs" />
     <Compile Include="MailAddress.cs" />
     <Compile Include="MailAddressCollection.cs" />
+    <Compile Include="MailboxInfo.cs" />
     <Compile Include="MailHeader.cs" />
     <Compile Include="MailHeaderCollection.cs" />
     <Compile Include="MailMessage.cs" />
     <Compile Include="Enums\MailMessageBodyType.cs" />
     <Compile Include="Enums\MailPriority.cs" />
     <Compile Include="ExtensionMethods\IMailMessageExtensionMethods.cs" />
+    <Compile Include="MessageInfo.cs" />
+    <Compile Include="MessageInfoCollection.cs" />
     <Compile Include="MimeMailMessageConverter.cs" />
     <Compile Include="Pop3Client.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlMailMessageConverter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Opo.Net.Mime\Opo.Net.Mime.csproj">
+      <Project>{013F6B4D-ED77-4A08-9EAF-5AA2517F05F4}</Project>
+      <Name>Opo.Net.Mime</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
