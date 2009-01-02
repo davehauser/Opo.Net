@@ -63,11 +63,12 @@
     <Compile Include="AlternativeViewCollection.cs" />
     <Compile Include="Interfaces\IAttachment.cs" />
     <Compile Include="Interfaces\IMailAddress.cs" />
+    <Compile Include="Interfaces\IMailClient.cs" />
     <Compile Include="Interfaces\IMailMessage.cs" />
     <Compile Include="Interfaces\IMailMessageConverter.cs" />
     <Compile Include="Interfaces\IRecieveMailClient.cs" />
     <Compile Include="Interfaces\ISendMailClient.cs" />
-    <Compile Include="IPop3Client.cs" />
+    <Compile Include="Interfaces\IPop3Client.cs" />
     <Compile Include="MailAddress.cs" />
     <Compile Include="MailAddressCollection.cs" />
     <Compile Include="MailboxInfo.cs" />
