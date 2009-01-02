@@ -12,7 +12,10 @@ namespace Opo.Net.Mail
 {
     public delegate void Pop3EventHandler(object source, Pop3Client.Pop3EventArgs e);
 
-    public class Pop3Client : IRecieveMailClient, IDisposable
+    /// <summary>
+    /// Represents a POP3 client
+    /// </summary>
+    public class Pop3Client : IPop3Client
     {
         #region Fields
         private TcpClient client;
