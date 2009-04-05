@@ -28,8 +28,7 @@ namespace Opo.Net.Mime
             if (m.Success)
             {
                 string dateTime = m.Groups["DateTime"].Value.TrimStart('0');
-                //parsedDateTime = DateTime.ParseExact("2 Apr 2008 12:37:04", new string[] { "d MMM yyyy HH:mm", "d MMM yyyy HH:mm:ss" }, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
-                parsedDateTime = DateTime.ParseExact(dateTime, new string[] { "d MMM yyyy HH:mm", "d MMM yyyy HH:mm:ss" }, CultureInfo.InvariantCulture, DateTimeStyles.None);
+                parsedDateTime = DateTime.ParseExact(dateTime, new string[] { "d MMM yyyy HH:mm", "d MMM yyyy HH:mm:ss", "d MMM yyyy hh:mm", "d MMM yyyy hh:mm:ss" }, CultureInfo.InvariantCulture, DateTimeStyles.None);
 
                 string timeZone = m.Groups["TimeZone"].Value;
                 if (timeZone.Length == 5)
