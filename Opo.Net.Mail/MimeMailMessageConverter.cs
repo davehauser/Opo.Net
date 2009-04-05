@@ -72,7 +72,7 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Converts MIME data to MailMessage
         /// </summary>
-        /// <param name="data">A String containing the MIME data</param>
+        /// <param name="mimeData">A String containing the MIME data</param>
         /// <returns>A new instance of the MailMessage class</returns>
         public IMailMessage ConvertFrom(string mimeData)
         {
@@ -82,8 +82,7 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Converts MIME data to MailMessage
         /// </summary>
-        /// <param name="mimeParser">IMimeParser that is used to parse the MIME data</param>
-        /// <param name="mimeData">A String containing the MIME data</param>
+        /// <param name="mimeEntity">A String containing the MIME data</param>
         /// <returns>A new instance of the MailMessage class</returns>
         public IMailMessage ConvertFrom(IMimeEntity mimeEntity)
         {
@@ -223,14 +222,13 @@ namespace Opo.Net.Mail
                         {
                             mailMessage.Body = content;
                         }
-                        switch (contentType.Substring(5))
+                        if (contentType.Length > 5 && contentType.Substring(5) == "html")
                         {
-                            case "html":
-                                mailMessage.BodyType = MailMessageBodyType.Html;
-                                break;
-                            default:
-                                mailMessage.BodyType = MailMessageBodyType.PlainText;
-                                break;
+                            mailMessage.BodyType = MailMessageBodyType.Html;
+                        }
+                        else
+                        {
+                            mailMessage.BodyType = MailMessageBodyType.PlainText;
                         }
                     }
                     else
@@ -244,7 +242,7 @@ namespace Opo.Net.Mail
                 else if (entity is AttachmentMimeEntity)
                 {
                     string contentType = entity.GetHeaderValue("Content-Type");
-                    Regex r = new Regex(@"filename=\x22(?<Name>.*?)\x22");
+                    Regex r = new Regex(@"(file)?name=\x22(?<Name>.*?)\x22");
                     string name = r.Match(contentType).Groups["Name"].Value;
                     if (contentType.Contains(';'))
                         contentType = contentType.Substring(0, contentType.IndexOf(';'));
@@ -256,8 +254,12 @@ namespace Opo.Net.Mail
 
                     string contentTransferEncoding = entity.GetHeaderValue("Content-Transfer-Encoding");
 
-
-                    IAttachment attachment = new Attachment(name, (entity as AttachmentMimeEntity).GetContent(), contentTransferEncoding);
+                    if (name.Length > 0)
+                    {
+                        IAttachment attachment = new Attachment(name, (entity as AttachmentMimeEntity).GetContent(), contentTransferEncoding);
+                        attachment.ContentType = contentType;
+                        mailMessage.Attachments.Add(attachment);
+                    }
                 }
 
                 if (entity.HasEntities)
@@ -350,7 +352,7 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Saves a IMailMessage to a MIME data file
         /// </summary>
-        /// <param name="mailMessage">IMailMessage to convert</param>
+        /// <param name="message">IMailMessage to convert</param>
         /// <param name="path">Absolute path where the MIME data file is saved</param>
         /// <returns>A String containing the generated filename of the MIME data file</returns>
         public string SaveToFile(IMailMessage message, string path)
@@ -361,7 +363,7 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Saves a IMailMessage to a MIME data file
         /// </summary>
-        /// <param name="mailMessage">IMailMessage to convert</param>
+        /// <param name="message">IMailMessage to convert</param>
         /// <param name="path">Absolute path where the MIME data file is saved</param>
         /// <param name="fileName">Filename for the MIME data file</param>
         /// <returns>A String containing the filename of the MIME data file</returns>
@@ -373,8 +375,7 @@ namespace Opo.Net.Mail
         /// <summary>
         /// Checks if the addresses are encoded and returns an array of decoded addresses
         /// </summary>
-        /// <param name="mimeData">A string containing the text data of a MIME message</param>
-        /// <param name="type">A string containing the type of the addresses (e.g. "From", "CC")</param>
+        /// <param name="addressData">A string containing the text data of a MIME message</param>
         /// <returns>A String array containing addresses of the MIME message</returns>
         public string[] ParseAddresses(string addressData)
         {

@@ -451,7 +451,15 @@ namespace Opo.Net.Mail
         public string RETR(int messageNumber)
         {
             bool success = SendCommand(String.Format("RETR {0}", messageNumber));
-            return success ? GetMultiLineResponse() : "";
+            if (success)
+            {
+                downloadedMessageNumbers.Add(messageNumber);
+                return GetMultiLineResponse();
+            }
+            else
+            {
+                return "";
+            }
         }
 
         public string DELE(int messageNumber)
